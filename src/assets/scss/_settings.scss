@@ -1,59 +1,545 @@
 @use "lib/config";
-@use "lib/themes";
+@use "admin-tokens";
 
-.#{config.$prefix} {
-    &__settings {
-        margin: 1rem 20px 1rem 0;
-        color: themes.getCSSVar(foreground);
+// Settings page (admin redesign). Relies on the tokens and shared components in _admin.scss.
 
-        input[type="text"],
-        input[type="number"],
-        input[type="search"],
-        input[type="url"],
-        select,
-        textarea {
-            min-height: 2.75rem;
-            border: 1px solid themes.getCSSVar(control-border);
-            background: themes.getCSSVar(input);
-            color: themes.getCSSVar(foreground);
-            border-radius: themes.base(radius-sm);
-            padding: calc(#{themes.base(spacing)} * 1.5) calc(#{themes.base(spacing)} * 2);
+$p: config.$prefix;
+$mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 
-            &:focus {
-                border-color: themes.getCSSVar(primary);
-                outline: 2px solid themes.getCSSVar(ring);
-                outline-offset: 2px;
-                box-shadow: none;
+@function t($token) {
+    @return admin-tokens.t($token);
+}
+
+.#{$p}__admin {
+    // ---------- Notices ----------
+    .#{$p}__notices {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .#{$p}__notice {
+        --#{$p}-notice-color: #{t(accent-text)};
+
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 12px 14px 12px 18px;
+        border: 1px solid t(border);
+        border-radius: 10px;
+        background: t(card);
+        box-shadow: inset 4px 0 0 var(--#{$p}-notice-color);
+        color: t(foreground);
+
+        &--success {
+            --#{$p}-notice-color: #{t(success)};
+        }
+
+        &--warning {
+            --#{$p}-notice-color: #{t(warning)};
+        }
+
+        &--error {
+            --#{$p}-notice-color: #{t(destructive)};
+        }
+
+        &__icon {
+            flex: none;
+            margin-top: 1px;
+            color: var(--#{$p}-notice-color);
+        }
+
+        &__message {
+            flex: 1;
+            margin: 0;
+            color: t(foreground);
+            font-size: 14px;
+            line-height: 20px;
+
+            a {
+                color: t(accent-text);
             }
         }
 
-        .description {
-            color: themes.getCSSVar(muted-foreground);
+        &__dismiss {
+            display: inline-flex;
+            flex: none;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            margin: -2px -4px -2px 0;
+            padding: 0;
+            border: 0;
+            border-radius: 4px;
+            background: transparent;
+            color: t(helper);
+            cursor: pointer;
+
+            &:hover {
+                color: t(foreground);
+                background: t(hover);
+            }
+
+            &:focus-visible {
+                outline: 2px solid t(accent);
+                outline-offset: 1px;
+            }
+        }
+    }
+
+    // ---------- Form + cards ----------
+    // The form grows to fill the page wrapper, so the sticky save bar (its last child) can sit at the
+    // bottom of the viewport even when the content is short; sticky only moves within its parent.
+    .#{$p}__settings {
+        display: flex;
+        flex: 1 0 auto;
+        flex-direction: column;
+        gap: 20px;
+        margin: 0;
+    }
+
+    .#{$p}__card {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+
+        &__header {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
 
-        .button-primary,
-        .button.button-primary {
-            min-height: 2.75rem;
-            background: themes.getCSSVar(primary);
-            border-color: themes.getCSSVar(primary);
-            color: themes.getCSSVar(primary-foreground);
-            border-radius: themes.base(radius-sm);
+        &__title {
+            margin: 0;
+            padding: 0;
+            color: t(foreground);
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 19px;
+        }
 
-            &:hover,
-            &:focus {
-                background: color-mix(in srgb, themes.getCSSVar(primary) 86%, themes.getCSSVar(foreground));
-                border-color: themes.getCSSVar(primary);
-                color: themes.getCSSVar(primary-foreground);
-                outline: 2px solid themes.getCSSVar(ring);
-                outline-offset: 2px;
-                box-shadow: none;
+        &__description {
+            max-width: 760px;
+            margin: 0;
+            color: t(helper);
+            font-size: 13px;
+            line-height: 18px;
+        }
+    }
+
+    .#{$p}__settings__defaults {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px 40px;
+    }
+
+    .#{$p}__field__label--sm {
+        font-size: 13px;
+    }
+
+    .#{$p}__field--tight {
+        gap: 6px;
+    }
+
+    legend.#{$p}__field__label {
+        margin-bottom: 8px;
+        padding: 0;
+    }
+
+    // ---------- Radio pills / segmented control ----------
+    .#{$p}__choices {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .#{$p}__choice {
+        position: relative;
+        display: inline-flex;
+        margin: 0;
+
+        &__input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: 0;
+            opacity: 0;
+            pointer-events: none;
+        }
+    }
+
+    .#{$p}__choice__input:checked + .#{$p}__pill {
+        border-color: t(primary);
+        background: t(primary);
+        color: t(primary-foreground);
+        font-weight: 600;
+    }
+
+    .#{$p}__choice__input:focus-visible + .#{$p}__pill,
+    .#{$p}__choice__input:focus-visible + .#{$p}__segment {
+        outline: 2px solid t(accent);
+        outline-offset: 2px;
+    }
+
+    .#{$p}__segmented {
+        display: inline-flex;
+        flex-wrap: wrap;
+        align-self: flex-start;
+        gap: 4px;
+        padding: 4px;
+        border: 1px solid t(field-border);
+        border-radius: 999px;
+        background: t(input);
+    }
+
+    .#{$p}__segment {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 0 14px;
+        border-radius: 999px;
+        color: t(muted-foreground);
+        font-size: 13px;
+        line-height: 16px;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: background-color 0.15s ease, color 0.15s ease;
+
+        &:hover {
+            color: t(foreground);
+            background: t(hover);
+        }
+    }
+
+    .#{$p}__choice__input:checked + .#{$p}__segment {
+        background: t(primary);
+        color: t(primary-foreground);
+        font-weight: 600;
+    }
+
+    // ---------- Color ----------
+    .#{$p}__color-controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        min-height: 36px;
+    }
+
+    .#{$p}__color-custom {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+
+        &[hidden] {
+            display: none;
+        }
+    }
+
+    .#{$p}__color-sep {
+        width: 1px;
+        height: 20px;
+        background: t(border);
+    }
+
+    .#{$p}__swatch-input {
+        box-sizing: border-box;
+        width: 36px;
+        height: 36px;
+        margin: 0;
+        padding: 3px;
+        border: 1px solid t(field-border);
+        border-radius: 8px;
+        background: t(input);
+        cursor: pointer;
+
+        &::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        &::-webkit-color-swatch {
+            border: 0;
+            border-radius: 5px;
+        }
+
+        &::-moz-color-swatch {
+            border: 0;
+            border-radius: 5px;
+        }
+
+        &:focus-visible {
+            outline: 2px solid t(accent);
+            outline-offset: 2px;
+        }
+    }
+
+    .#{$p}__input--color {
+        width: 128px;
+    }
+
+    // ---------- Library rows ----------
+    .#{$p}__settings__libraries {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .#{$p}__settings__library {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        min-width: 0;
+        margin: 0;
+        padding: 16px;
+        border: 1px solid t(border);
+        border-radius: 10px;
+        background: t(row);
+
+        &__header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        &__icon {
+            display: inline-flex;
+            flex: none;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: t(primary-soft);
+            color: t(primary);
+        }
+
+        &__heading {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+        }
+
+        &__name {
+            margin: 0;
+            padding: 0;
+            color: t(foreground);
+            font-size: 15px;
+            font-weight: 600;
+            line-height: 18px;
+        }
+
+        &__meta {
+            margin: 0;
+            overflow: hidden;
+            color: t(helper);
+            font-family: $mono;
+            font-size: 12px;
+            line-height: 15px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        &__enabled {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+
+            .#{$p}__help {
+                margin: 0;
+            }
+        }
+    }
+
+    .#{$p}__toggle__label--strong {
+        font-weight: 600;
+    }
+
+    .#{$p}__settings__version-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        > label {
+            flex: none;
+        }
+
+        .#{$p}__select-wrap,
+        > .#{$p}__input {
+            flex: 1;
+            min-width: 0;
+        }
+    }
+
+    .#{$p}__select-wrap {
+        position: relative;
+        display: inline-flex;
+
+        .#{$p}__select {
+            width: 100%;
+            max-width: none;
+            padding-right: 36px;
+            font-family: $mono;
+            appearance: none;
+            background-image: none;
+        }
+
+        &__chevron {
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            color: t(helper);
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+    }
+
+    .#{$p}__field-error {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin: 0;
+        color: t(error-text);
+        font-size: 12px;
+        line-height: 16px;
+
+        svg {
+            flex: none;
+        }
+    }
+
+    .#{$p}__status {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        margin: 0;
+        color: t(muted-foreground);
+        font-size: 12px;
+        line-height: 16px;
+
+        &__dot {
+            flex: none;
+            width: 8px;
+            height: 8px;
+            margin-top: 4px;
+            border-radius: 50%;
+            background: t(helper);
+        }
+
+        &--cached .#{$p}__status__dot {
+            background: t(success);
+        }
+
+        &--fetching .#{$p}__status__dot {
+            background: t(warning);
+            animation: #{$p}-status-pulse 1.4s ease-in-out infinite;
+        }
+
+        &--none {
+            color: t(helper);
+        }
+    }
+
+    // ---------- Sticky save bar ----------
+    .#{$p}__savebar {
+        position: sticky;
+        bottom: 0;
+        z-index: 10;
+        margin: auto -32px 0;
+        padding: 0 32px;
+        border-top: 1px solid t(border);
+        background: t(card);
+        box-shadow: 0 -6px 16px t(shadow);
+
+        &__inner {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-height: 64px;
+        }
+
+        &__message {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+            color: t(muted-foreground);
+            font-size: 13px;
+            line-height: 16px;
+
+            &[hidden] {
+                display: none;
+            }
+
+            svg {
+                flex: none;
+                color: t(helper);
+            }
+
+            &--dirty {
+                color: t(foreground);
+                font-weight: 600;
+
+                &::before {
+                    content: "";
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: t(warning);
+                }
             }
         }
 
-        &__library {
-            margin: calc(#{themes.base(spacing)} * 6) 0;
-            padding: calc(#{themes.base(spacing)} * 2) 0 calc(#{themes.base(spacing)} * 4);
-            border-top: 1px solid themes.getCSSVar(border);
+        &__spacer {
+            flex: 1;
+        }
+    }
+}
+
+@keyframes #{$p}-status-pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.35;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .#{$p}__admin .#{$p}__status--fetching .#{$p}__status__dot {
+        animation: none;
+    }
+}
+
+@media (max-width: 1100px) {
+    .#{$p}__admin {
+        .#{$p}__settings__defaults,
+        .#{$p}__settings__libraries {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+}
+
+@media (max-width: 782px) {
+    // Keep the save bar flush with the bottom edge (the generic mobile padding would add 24px below it).
+    .#{$p}__admin--settings {
+        padding-bottom: 0;
+    }
+
+    .#{$p}__admin {
+        .#{$p}__savebar {
+            margin-inline: -16px;
+            padding-inline: 16px;
+
+            &__inner {
+                flex-wrap: wrap;
+                padding-block: 10px;
+            }
         }
     }
 }

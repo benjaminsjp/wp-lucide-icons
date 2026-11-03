@@ -242,6 +242,7 @@ class Settings
 
         $settings = self::get();
         $libraries = [];
+        $cdnFetchPending = (bool) wp_next_scheduled(CdnCatalog::CRON_HOOK);
 
         foreach (Registry::all() as $id => $library) {
             $libraries[] = [
@@ -256,6 +257,7 @@ class Settings
                 'cached_version' => CdnCatalog::version($id),
                 'cached_at' => CdnCatalog::fetchedAt($id),
                 'cached_count' => \count(CdnCatalog::icons($id)),
+                'fetching' => $cdnFetchPending && self::libraryEnabled($settings, $id) && self::librarySource($settings, $id) === 'cdn',
             ];
         }
 

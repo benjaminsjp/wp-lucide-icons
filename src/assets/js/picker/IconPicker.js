@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { Spinner } from '@wordpress/components';
 import { fetchIcons, fetchLibraries } from './api';
+import LucideSvg from './icons';
 
 const pageCache = new Map();
 
@@ -55,6 +56,7 @@ export default function IconPicker({
     variant = 'default',
 }) {
     const isDialog = variant === 'dialog';
+    const isLibrary = variant === 'library';
     const gridRef = useRef(null);
     const sentinelRef = useRef(null);
     const filterRef = useRef({ library, search: '' });
@@ -127,7 +129,7 @@ export default function IconPicker({
             return undefined;
         }
 
-        const append = isDialog && !filterChanged && page > 1;
+        const append = (isDialog || isLibrary) && !filterChanged && page > 1;
         const cached = pageCache.get(pageCacheKey(library, search, page));
 
         const apply = (data) => {
@@ -225,7 +227,7 @@ export default function IconPicker({
     );
 
     const initialLoad = loading && page === 1;
-    const searchPlaceholder = isDialog
+    const searchPlaceholder = isDialog || isLibrary
         ? __('Search for an icon, e.g. "arrow" or "home"', 'wpicons')
         : __('Search icons', 'wpicons');
 
@@ -243,7 +245,7 @@ export default function IconPicker({
                     }}
                 >
                     {item.label}
-                    {isDialog ? null : (
+                    {isDialog || isLibrary ? null : (
                         <span className="wpicons__picker__count">{item.count}</span>
                     )}
                 </button>
@@ -254,6 +256,7 @@ export default function IconPicker({
     const searchField = (
         <label className="wpicons__picker__search">
             <span className="screen-reader-text">{__('Search icons', 'wpicons')}</span>
+            {isLibrary ? <LucideSvg name="search" size={16} className="wpicons__picker__search-icon" /> : null}
             <input
                 type="search"
                 value={searchInput}
@@ -265,12 +268,28 @@ export default function IconPicker({
     );
 
     return (
-        <div className={`wpicons__picker${isDialog ? ' wpicons__picker--dialog' : ''}`}>
+        <div className={`wpicons__picker${isDialog ? ' wpicons__picker--dialog' : ''}${isLibrary ? ' wpicons__picker--library' : ''}`}>
             <div className="wpicons__picker__toolbar">
-                {isDialog ? searchField : tabs}
-                {isDialog ? tabs : searchField}
+                {isLibrary ? (
+                    <>
+                        {searchField}
+                        <div className="wpicons__picker__tabs-row">
+                            {tabs}
+                            {currentLibrary ? (
+                                <span className="wpicons__picker__meta">
+                                    {__('Version', 'wpicons')}: {currentLibrary.version}
+                                </span>
+                            ) : null}
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        {isDialog ? searchField : tabs}
+                        {isDialog ? tabs : searchField}
+                    </>
+                )}
             </div>
-            {!isDialog && currentLibrary ? (
+            {!isDialog && !isLibrary && currentLibrary ? (
                 <p className="wpicons__picker__meta">
                     {__('Version', 'wpicons')}: {currentLibrary.version}
                     {total ? ` · ${total}` : ''}
@@ -312,6 +331,29 @@ export default function IconPicker({
                     </div>
                 ) : null}
             </div>
+            {isLibrary ? (
+                <div className="wpicons__picker__footer">
+                    <p className="wpicons__picker__status">
+                        {total ? sprintf(
+                            /* translators: 1: number of icons currently listed, 2: total matching icons */
+                            __('%1$d of %2$d icons', 'wpicons'),
+                            items.length,
+                            total,
+                        ) : ''}
+                    </p>
+                    {page < totalPages ? (
+                        <button
+                            type="button"
+                            className="wpicons__btn wpicons__btn--ghost"
+                            disabled={loading}
+                            onClick={() => setPage((value) => Math.min(value + 1, totalPagesRef.current))}
+                        >
+                            <LucideSvg name="chevron-down" size={16} />
+                            <span>{loading ? __('Loading icons', 'wpicons') : __('Load more', 'wpicons')}</span>
+                        </button>
+                    ) : null}
+                </div>
+            ) : null}
             {isDialog && total ? (
                 <p className="wpicons__picker__status">
                     {sprintf(
@@ -322,7 +364,7 @@ export default function IconPicker({
                     )}
                 </p>
             ) : null}
-            {!isDialog && totalPages > 1 ? (
+            {!isDialog && !isLibrary && totalPages > 1 ? (
                 <div className="wpicons__picker__pager">
                     <button type="button" disabled={loading || page <= 1} onClick={() => setPage((value) => value - 1)}>
                         {__('Previous', 'wpicons')}

@@ -233,7 +233,7 @@ export default function IconPickerModal({
         >
             <div
                 ref={dialogRef}
-                className={`wpicons wpicons_ wpicons__picker-dialog${className ? ` ${className}` : ''}`}
+                className={`wpicons wpicons__picker-dialog${className ? ` ${className}` : ''}`}
                 theme="dark"
                 role="dialog"
                 aria-modal="true"

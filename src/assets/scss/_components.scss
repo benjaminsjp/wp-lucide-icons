@@ -1,7 +1,7 @@
 @use "lib/config";
 @use "lib/themes";
 
-.#{config.$prefix}_ {
+.#{config.$prefix} {
     --wp-admin-theme-color: #{themes.getCSSVar(primary)};
     --wp-admin-theme-color-darker-10: #{themes.getCSSVar(primary)};
     --wp-admin-theme-color-darker-20: #{themes.getCSSVar(primary)};

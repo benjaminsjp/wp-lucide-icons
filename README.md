@@ -1,6 +1,6 @@
 # WP Icons
 
-A WordPress plugin for placing icons from [Lucide](https://lucide.dev/) and [Material Symbols](https://fonts.google.com/icons) (Outlined), with room to add more libraries later. Icons render as inline SVG.
+A WordPress plugin for placing icons from [Lucide](https://lucide.dev/) and [Material Symbols](https://fonts.google.com/icons) (Outlined), with room to add more libraries later. Icons render as inline SVG. See [Icon libraries](#icon-libraries) for what is bundled today and what is planned.
 
 The plugin is **WP Icons**. The repository and plugin folder are `wp-lucide-icons`.
 
@@ -19,6 +19,23 @@ The plugin is **WP Icons**. The repository and plugin folder are `wp-lucide-icon
 - Bundled SVG catalogs, with an optional cached CDN refresh when the bundle is stale
 
 In Flatsome UX Builder iframes, the plugin loads a small script so inline icons preview correctly.
+
+## Icon libraries
+
+Two libraries ship with the plugin today. The others are planned and are not in the plugin yet; the list may change before they are released.
+
+| Library                                                       | Status  | Library id         | npm package                 | License                                                                                                                                                                    |
+| ------------------------------------------------------------- | ------- | ------------------ | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Lucide](https://lucide.dev/)                                 | Bundled | `lucide`           | `lucide-static`             | [ISC](https://github.com/lucide-icons/lucide/blob/main/LICENSE). Icons derived from Feather are MIT.                                                                       |
+| [Material Symbols](https://fonts.google.com/icons) (Outlined) | Bundled | `material-symbols` | `@material-symbols/svg-400` | [Apache-2.0](https://github.com/google/material-design-icons/blob/master/LICENSE)                                                                                          |
+| Simple Icons                                                  | Planned |                    |                             | [CC0-1.0](https://github.com/simple-icons/simple-icons/blob/develop/LICENSE.md) for the project. Brand logos are trademarks of their owners; some icons carry other terms. |
+| Phosphor                                                      | Planned |                    |                             | [MIT](https://github.com/phosphor-icons/core/blob/main/LICENSE)                                                                                                            |
+| Tabler Icons                                                  | Planned |                    |                             | [MIT](https://github.com/tabler/tabler-icons/blob/main/LICENSE)                                                                                                            |
+| Heroicons                                                     | Planned |                    |                             | [MIT](https://github.com/tailwindlabs/heroicons/blob/master/LICENSE)                                                                                                       |
+| Ionicons                                                      | Planned |                    |                             | [MIT](https://github.com/ionic-team/ionicons/blob/main/LICENSE)                                                                                                            |
+| Octicons                                                      | Planned |                    |                             | [MIT](https://github.com/primer/octicons/blob/main/LICENSE). GitHub logos follow GitHub's [logo guidelines](https://github.com/logos).                                     |
+
+Each icon set is a third-party work under its own license. See [Trademarks & usage responsibility](#trademarks--usage-responsibility) before using brand icons.
 
 ## Requirements
 
@@ -92,7 +109,17 @@ WP Icons adds a top-level menu (capability `manage_options`):
 - **Library** — browse bundled icons, preview options, copy a shortcode
 - **Settings** — defaults, which libraries are enabled, and per-library source
 
-Each library source is either **plugin** (the catalog shipped in the plugin) or **cdn** (a newer npm catalog). CDN downloads are cached under `wp-content/uploads/wp-icons/` by a daily cron job and are never fetched during page views. If the cache is empty, the plugin uses the bundled catalog.
+Each library source is either **plugin** (the catalog shipped in the plugin) or **cdn** (a newer catalog downloaded from the npm registry). CDN downloads are cached under `wp-content/uploads/wp-icons/` by a background WP-Cron job and are never fetched during page views. If the cache is empty, the plugin uses the bundled catalog.
+
+### External requests and privacy
+
+- **Visitors:** icons are printed as inline SVG from the bundled or cached catalog. Front-end page views never contact npm, a CDN, or any other third party for icons.
+- **Settings page:** opening **WP Icons → Settings** asks `registry.npmjs.org` for the list of published versions of each library's package, to fill the **CDN version** list. The answer is cached for 12 hours. This happens even when every library uses the **plugin** source.
+- **CDN source:** when a library is enabled and set to **cdn**, the server downloads that package's metadata and tarball from the npm registry shortly after you save, then once a day. Nothing is downloaded for libraries on the **plugin** source.
+- These are server-to-server requests made with `wp_remote_get()`. The npm registry sees your server's IP address and the default WordPress user agent, which includes your site URL. No visitor data is sent.
+- Uninstalling the plugin deletes its settings, the cached catalogs in `wp-content/uploads/wp-icons/`, its transients, and its cron event.
+
+If you rely on a privacy policy, mention the npm registry when you use the CDN source or the Settings page.
 
 ## Development
 
@@ -195,6 +222,19 @@ echo (new Renderer())->fromAttributes([
 ```
 
 Library ids are `lucide` (size, color, stroke) and `material-symbols` (size, color). An unknown name or a disabled library returns an empty string.
+
+## Trademarks & usage responsibility
+
+WP Icons makes it quick to use existing open-source icon sets inside WordPress. It does not create or own those icons.
+
+- **Third-party works.** Every icon set is the work of its authors and is licensed under its own terms, listed in [Icon libraries](#icon-libraries). WP Icons only provides access to the icons. It does not grant any rights beyond those licenses.
+- **Brand icons.** Logos and brand marks (for example in Simple Icons, or the GitHub logos in Octicons) are trademarks of their owners. Owners often publish their own usage guidelines. Using a brand icon does not mean the brand owner endorses you, your site, or WP Icons.
+- **Your responsibility.** You, as the site owner or user, decide which icons to use and where. You are responsible for making sure that use complies with each icon's license and with any trademark owner's guidelines.
+- **No warranty.** WP Icons is free software, provided "as is" without warranty of any kind, as described in the GPL.
+
+## License
+
+WP Icons is licensed under [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html). The bundled icon sets keep their own licenses, listed in [Icon libraries](#icon-libraries).
 
 ## Changelog
 

@@ -21,7 +21,7 @@ export default function Edit({ attributes, setAttributes }) {
     const [preview, setPreview] = useState('');
 
     const blockProps = useBlockProps({
-        className: 'wpicons wpicons_ wp-block-wpicons-icon__wrap',
+        className: 'wpicons wp-block-wpicons-icon__wrap',
     });
 
     useEffect(() => {

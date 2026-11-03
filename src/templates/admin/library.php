@@ -4,11 +4,14 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+$icon = require __DIR__ . '/partials/icons.php';
+$active = 'library';
+$description = __('Browse bundled icon libraries, preview customization, and copy a shortcode. In the block editor, insert the Icon block to place an icon on a page.', 'wpicons');
+
 ?>
-<div class="wpicons wpicons_ wpicons--admin" theme="light">
+<div class="wpicons wpicons--admin wpicons__admin wpicons__admin--library">
+    <?php include __DIR__ . '/partials/header.php'; ?>
     <div class="wpicons__library">
-        <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
-        <p><?php esc_html_e('Browse bundled icon libraries, preview customization, and copy a shortcode. In the block editor, insert the Icon block to place an icon on a page.', 'wpicons'); ?></p>
         <div id="wpicons-library-root" class="wpicons__library__root"></div>
     </div>
 </div>

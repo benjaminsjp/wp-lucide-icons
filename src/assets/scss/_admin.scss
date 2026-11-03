@@ -1,0 +1,724 @@
+@use "lib/config";
+@use "lib/themes";
+@use "admin-tokens";
+
+// Admin UI (Library + Settings pages). Colors come from the plugin theme variables (see _admin-tokens.scss),
+// so the pages follow prefers-color-scheme. Scoped to .wpicons__admin so the picker modal and front end are untouched.
+
+$p: config.$prefix;
+
+@function t($token) {
+    @return admin-tokens.t($token);
+}
+
+$font:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen-Sans,
+    Ubuntu,
+    Cantarell,
+    "Helvetica Neue",
+    sans-serif;
+$mono:
+    "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas,
+    "Liberation Mono", monospace;
+
+// Full-bleed canvas behind the plugin pages. <body> sits outside .wpicons, so it can't read the
+// --wpicons-* variables; use the same theme palette values directly, switched the same way.
+// canvas-bg() is the single source for anything outside the wrapper that must match the page background.
+@function canvas-bg($theme) {
+    @return themes.color($theme, background);
+}
+
+@mixin admin-canvas($theme) {
+    background: canvas-bg($theme);
+
+    #wpfooter {
+        color: themes.color($theme, muted-foreground);
+
+        a {
+            color: themes.color($theme, foreground);
+        }
+    }
+}
+
+body:has(.#{$p}__admin) {
+    @include admin-canvas(light);
+
+    #wpcontent {
+        padding-left: 0;
+    }
+
+    #wpbody-content {
+        padding-bottom: 0;
+    }
+
+    #wpfooter {
+        position: static;
+        padding-inline: 32px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        @include admin-canvas(dark);
+    }
+}
+
+body:has(.#{$p}) {
+    ul#adminmenu a.wp-has-current-submenu::after,
+    ul#adminmenu > li.current > a.current::after {
+        border-right-color: canvas-bg(light);
+
+        @media (prefers-color-scheme: dark) {
+            border-right-color: canvas-bg(dark);
+        }
+    }
+}
+
+.#{$p}__admin {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    // Fill the viewport below the admin bar (WP sets this var: 32px, 46px on small screens).
+    min-height: calc(100vh - var(--wp-admin--admin-bar--height, 32px));
+    min-height: calc(100dvh - var(--wp-admin--admin-bar--height, 32px));
+    padding: 28px 32px 32px;
+    background: t(bg);
+    color: t(foreground);
+    font-family: $font;
+    font-size: 14px;
+    line-height: 1.4;
+
+    &--settings {
+        gap: 20px;
+        padding-bottom: 0;
+    }
+
+    .screen-reader-text {
+        position: absolute !important;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(1px, 1px, 1px, 1px);
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+
+    .wp-header-end {
+        display: none;
+    }
+
+    // Third-party admin notices that WordPress moves below .wp-header-end.
+    > .notice,
+    > .error,
+    > .updated {
+        margin: 0;
+        border-radius: 10px;
+    }
+
+    a:focus,
+    button:focus,
+    input:focus,
+    select:focus {
+        box-shadow: none;
+    }
+
+    // ---------- Header ----------
+    &-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+
+        &__logo {
+            display: inline-flex;
+            flex: none;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: t(primary);
+            color: t(primary-foreground);
+        }
+
+        &__heading {
+            display: flex;
+            flex: 1 1 auto;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        &__title-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        &__title {
+            margin: 0;
+            padding: 0;
+            color: t(foreground);
+            font-family: $font;
+            font-size: 24px;
+            font-weight: 600;
+            line-height: 30px;
+        }
+
+        &__description {
+            max-width: 760px;
+            margin: 0;
+            color: t(helper);
+            font-size: 14px;
+            line-height: 20px;
+        }
+
+        &__tabs {
+            display: flex;
+            flex: none;
+            align-items: center;
+            gap: 8px;
+        }
+    }
+
+    &-icon {
+        display: block;
+        flex: none;
+    }
+
+    // ---------- Badge / chip ----------
+    .#{$p}__badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 8px;
+        border: 1px solid t(field-border);
+        border-radius: 999px;
+        background: t(subtle);
+        color: t(muted-foreground);
+        font-family: $mono;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 16px;
+    }
+
+    .#{$p}__chip {
+        display: inline-flex;
+        flex: none;
+        align-items: center;
+        padding: 4px 10px;
+        border: 1px solid t(primary-border);
+        border-radius: 999px;
+        background: t(primary-soft);
+        color: t(accent-text);
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 15px;
+        white-space: nowrap;
+    }
+
+    // ---------- Pills (page switcher, library tabs, radio pills) ----------
+    .#{$p}__pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 36px;
+        padding: 0 16px;
+        border: 1px solid t(control-border);
+        border-radius: 999px;
+        background: transparent;
+        color: t(foreground);
+        font-family: $font;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 17px;
+        text-decoration: none;
+        white-space: nowrap;
+        cursor: pointer;
+        transition:
+            background-color 0.15s ease,
+            border-color 0.15s ease,
+            color 0.15s ease;
+
+        &:hover {
+            border-color: t(foreground);
+            background: t(hover);
+            color: t(foreground);
+        }
+
+        &:focus-visible {
+            outline: 2px solid t(accent);
+            outline-offset: 2px;
+        }
+
+        &.is-active {
+            border-color: t(primary);
+            background: t(primary);
+            color: t(primary-foreground);
+            font-weight: 600;
+        }
+    }
+
+    // ---------- Cards / panels ----------
+    .#{$p}__panel,
+    .#{$p}__card {
+        border: 1px solid t(border);
+        border-radius: 20px;
+        background: t(card);
+        color: t(foreground);
+    }
+
+    .#{$p}__panel {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding: 24px;
+
+        &__title {
+            margin: 0;
+            color: t(foreground);
+            font-family: $font;
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 19px;
+        }
+    }
+
+    .#{$p}__divider {
+        width: 100%;
+        height: 1px;
+        margin: 0;
+        border: 0;
+        background: t(border);
+    }
+
+    // ---------- Fields ----------
+    .#{$p}__field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-width: 0;
+        margin: 0;
+        padding: 0;
+        border: 0;
+
+        &__label-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        &__label {
+            padding: 0;
+            color: t(foreground);
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 17px;
+        }
+
+        &__hint {
+            color: t(helper);
+            font-size: 12px;
+            line-height: 15px;
+            white-space: nowrap;
+        }
+
+        &--nested {
+            margin-top: 8px;
+        }
+    }
+
+    .#{$p}__help {
+        margin: 0;
+        color: t(helper);
+        font-size: 12px;
+        line-height: 18px;
+    }
+
+    // ---------- Inputs ----------
+    .#{$p}__input,
+    .#{$p}__number,
+    .#{$p}__select {
+        box-sizing: border-box;
+        min-height: 36px;
+        margin: 0;
+        padding: 0 12px;
+        border: 1px solid t(field-border);
+        border-radius: 8px;
+        background: t(input);
+        color: t(foreground);
+        font-family: $font;
+        font-size: 14px;
+        line-height: 17px;
+        box-shadow: none;
+
+        &:hover {
+            border-color: t(field-border);
+            color: t(foreground);
+        }
+
+        &:focus {
+            color: t(foreground);
+            border-color: t(primary);
+            outline: 0;
+            box-shadow:
+                0 0 0 1px t(primary),
+                0 0 0 4px t(focus-glow);
+        }
+
+        &:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            background: t(input);
+            color: t(foreground);
+            border-color: t(field-border);
+        }
+
+        &[aria-invalid="true"] {
+            border-color: t(destructive);
+            box-shadow:
+                0 0 0 0.5px t(destructive),
+                0 0 0 4px t(danger-glow);
+        }
+    }
+
+    .#{$p}__input {
+        width: 100%;
+
+        &--mono {
+            font-family: $mono;
+            font-size: 13px;
+        }
+    }
+
+    .#{$p}__number {
+        flex: none;
+        width: 56px;
+        padding: 0 6px;
+        text-align: center;
+        appearance: textfield;
+        -moz-appearance: textfield;
+
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+            margin: 0;
+            appearance: none;
+        }
+    }
+
+    // ---------- Slider ----------
+    .#{$p}__slider-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .#{$p}__unit {
+        color: t(helper);
+        font-size: 13px;
+    }
+
+    .#{$p}__range {
+        --#{$p}-range-fill: 0%;
+
+        flex: 1 1 auto;
+        min-width: 0;
+        height: 20px;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+
+        &::-webkit-slider-runnable-track {
+            height: 4px;
+            border-radius: 2px;
+            background: linear-gradient(
+                to right,
+                t(primary) 0 var(--#{$p}-range-fill),
+                t(track) var(--#{$p}-range-fill) 100%
+            );
+        }
+
+        &::-moz-range-track {
+            height: 4px;
+            border-radius: 2px;
+            background: t(track);
+        }
+
+        &::-moz-range-progress {
+            height: 4px;
+            border-radius: 2px;
+            background: t(primary);
+        }
+
+        &::-webkit-slider-thumb {
+            width: 18px;
+            height: 18px;
+            margin-top: -7px;
+            border: 2px solid t(field-border);
+            border-radius: 50%;
+            background: t(track);
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        &::-moz-range-thumb {
+            box-sizing: border-box;
+            width: 18px;
+            height: 18px;
+            border: 2px solid t(field-border);
+            border-radius: 50%;
+            background: t(track);
+        }
+
+        &:focus {
+            outline: 0;
+        }
+
+        &:focus-visible::-webkit-slider-thumb {
+            box-shadow: 0 0 0 4px t(focus-glow);
+        }
+
+        &:focus-visible::-moz-range-thumb {
+            box-shadow: 0 0 0 4px t(focus-glow);
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+        }
+    }
+
+    // ---------- Toggle ----------
+    .#{$p}__toggle {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0;
+        color: t(foreground);
+        font-size: 14px;
+        line-height: 17px;
+        cursor: pointer;
+
+        &--between {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        &__label {
+            color: t(foreground);
+        }
+
+        &__input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: 0;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        &__track {
+            position: relative;
+            display: inline-block;
+            flex: none;
+            box-sizing: border-box;
+            width: 36px;
+            height: 20px;
+            border: 1.5px solid t(toggle-off-border);
+            border-radius: 999px;
+            background: t(toggle-off);
+            transition:
+                background-color 0.15s ease,
+                border-color 0.15s ease;
+
+            &::after {
+                content: "";
+                position: absolute;
+                top: 50%;
+                left: 2px;
+                width: 13px;
+                height: 13px;
+                border-radius: 50%;
+                background: t(toggle-off-border);
+                transform: translateY(-50%);
+                transition:
+                    transform 0.15s ease,
+                    background-color 0.15s ease;
+            }
+        }
+
+        .#{$p}__toggle__input:checked + .#{$p}__toggle__track {
+            border-color: t(primary);
+            background: t(primary);
+
+            &::after {
+                background: t(primary-foreground);
+                transform: translate(16px, -50%);
+            }
+        }
+
+        .#{$p}__toggle__input:focus-visible + .#{$p}__toggle__track {
+            outline: 2px solid t(accent);
+            outline-offset: 2px;
+        }
+
+        .#{$p}__toggle__input:disabled + .#{$p}__toggle__track {
+            cursor: not-allowed;
+        }
+    }
+
+    // ---------- Buttons ----------
+    .#{$p}__btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 40px;
+        margin: 0;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
+        color: t(foreground);
+        font-family: $font;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 17px;
+        text-decoration: none;
+        cursor: pointer;
+        transition:
+            background-color 0.15s ease,
+            color 0.15s ease,
+            border-color 0.15s ease;
+
+        &:focus-visible {
+            outline: 2px solid t(accent);
+            outline-offset: 2px;
+        }
+
+        &--primary {
+            background: t(primary);
+            color: t(primary-foreground);
+
+            &:hover:not(:disabled) {
+                background: t(primary-hover);
+                color: t(primary-foreground);
+            }
+        }
+
+        &--secondary {
+            border: 1.5px solid t(control-border);
+            background: t(button-secondary);
+            color: t(foreground);
+
+            &:hover:not(:disabled) {
+                border-color: t(foreground);
+                color: t(foreground);
+            }
+        }
+
+        &--ghost {
+            padding: 0 12px;
+            color: t(primary);
+
+            &:hover:not(:disabled) {
+                background: t(primary-softer);
+                color: t(primary);
+            }
+        }
+
+        &--block {
+            width: 100%;
+        }
+
+        &:disabled {
+            background: t(disabled);
+            color: t(disabled-foreground);
+            border-color: transparent;
+            cursor: not-allowed;
+        }
+
+        &--ghost:disabled {
+            background: transparent;
+        }
+    }
+
+    .#{$p}__icon-button {
+        display: inline-flex;
+        flex: none;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        border-radius: 6px;
+        background: t(hover);
+        color: t(muted-foreground);
+        cursor: pointer;
+
+        &:hover:not(:disabled) {
+            background: t(hover-strong);
+            color: t(foreground);
+        }
+
+        &:focus-visible {
+            outline: 2px solid t(accent);
+            outline-offset: 1px;
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+        }
+    }
+
+    // ---------- Code block ----------
+    .#{$p}__code {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 10px 8px 10px 12px;
+        border: 1px solid t(border);
+        border-radius: 8px;
+        background: t(inset);
+
+        code {
+            flex: 1 1 auto;
+            min-width: 0;
+            padding: 0;
+            background: transparent;
+            color: t(muted-foreground);
+            font-family: $mono;
+            font-size: 12px;
+            line-height: 18px;
+            word-break: break-word;
+            user-select: all;
+
+            &.is-placeholder {
+                color: t(helper);
+                user-select: none;
+            }
+        }
+    }
+}
+
+@media (max-width: 782px) {
+    .#{$p}__admin {
+        padding: 20px 16px 24px;
+
+        &-header {
+            flex-wrap: wrap;
+
+            &__tabs {
+                width: 100%;
+            }
+        }
+    }
+}
