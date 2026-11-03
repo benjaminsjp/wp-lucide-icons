@@ -134,6 +134,9 @@ export function placeholderAttributes({
     if (resolvedVariant) {
         attributes.variant = resolvedVariant;
     }
+    if (resolvedColor === 'brand' && /^[0-9a-f]{6}$/i.test(String(hex || ''))) {
+        attributes.hex = String(hex).toLowerCase();
+    }
 
     return attributes;
 }
@@ -152,6 +155,7 @@ export function placeholderHtml(icon) {
         ` data-color="${escapeAttr(attrs.color)}"` +
         ` data-stroke="${escapeAttr(attrs.stroke)}"` +
         optionalAttr('data-size', attrs.size) +
+        optionalAttr('data-hex', attrs.hex) +
         optionalAttr('data-title', attrs.title) +
         optionalAttr('data-variant', attrs.variant) +
         ` alt="${escapeAttr(attrs.alt)}" />`
@@ -198,17 +202,22 @@ export function migrateInlineIconHtml(html) {
         const color = readAttr(open, 'data-color') || defaults.color || 'currentColor';
         const size = readAttr(open, 'data-size');
         const title = readAttr(open, 'data-title');
+        const stored = readAttr(open, 'data-hex');
+        const hex = String(color).trim().toLowerCase() === 'brand' && /^[0-9a-f]{6}$/i.test(stored)
+            ? stored.toLowerCase()
+            : '';
 
         return (
             `<img class="${INLINE_CLASS}"` +
             ` src="${escapeAttr(TRANSPARENT_SRC)}"` +
             ` data-src="${escapeAttr(url)}"` +
-            ` style="${escapeAttr(iconPreviewStyle(url, color, size))}"` +
+            ` style="${escapeAttr(iconPreviewStyle(url, hex ? `#${hex}` : color, size))}"` +
             ` data-library="${escapeAttr(readAttr(open, 'data-library') || defaults.library || 'lucide')}"` +
             ` data-name="${escapeAttr(iconName)}"` +
             ` data-color="${escapeAttr(safeColor(color))}"` +
             ` data-stroke="${escapeAttr(readAttr(open, 'data-stroke') || String(defaults.stroke ?? 2))}"` +
             optionalAttr('data-size', explicitSize(size)) +
+            optionalAttr('data-hex', hex) +
             optionalAttr('data-title', title) +
             optionalAttr('data-variant', readAttr(open, 'data-variant')) +
             ` alt="${escapeAttr(title)}" />` +

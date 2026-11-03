@@ -26,7 +26,7 @@
 
     function previewColor(color) {
         var value = String(color || '').trim();
-        if (!value || value.toLowerCase() === 'currentcolor') {
+        if (!value || value.toLowerCase() === 'currentcolor' || value.toLowerCase() === 'brand') {
             return '';
         }
 
@@ -38,9 +38,22 @@
         return value.replace(/[;"\\]/g, '');
     }
 
-    function previewStyle(src, color, size) {
+    function storedHex(color, hex) {
+        if (String(color || '').trim().toLowerCase() !== 'brand') {
+            return '';
+        }
+        var value = String(hex || '').trim();
+        return /^[0-9a-f]{6}$/i.test(value) ? value.toLowerCase() : '';
+    }
+
+    function previewStyle(src, color, size, hex) {
         var style = '--wpicons-src:url(&quot;' + src + '&quot;)';
-        var resolved = String(color || '').toLowerCase() === 'brand' ? '' : previewColor(color);
+        var resolved = storedHex(color, hex);
+        if (resolved) {
+            resolved = '#' + resolved;
+        } else if (String(color || '').trim().toLowerCase() !== 'brand') {
+            resolved = previewColor(color);
+        }
         if (resolved) {
             style += ';background-color:' + resolved;
         }
@@ -78,7 +91,7 @@
             var stroke = readAttr(tag, 'data-stroke') || '2';
             var size = readAttr(tag, 'data-size');
             var iconTitle = readAttr(tag, 'data-title');
-
+            var hex = storedHex(color, readAttr(tag, 'data-hex'));
             var sizeStyle = size && /^\d+$/.test(String(size))
                 ? ' style="width:' + size + 'px;height:' + size + 'px"'
                 : '';
@@ -93,6 +106,7 @@
                 ' data-color="' + escapeAttr(color) + '"' +
                 ' data-stroke="' + escapeAttr(stroke) + '"' +
                 optionalAttr('data-size', size) +
+                optionalAttr('data-hex', hex) +
                 optionalAttr('data-title', iconTitle) +
                 optionalAttr('data-variant', readAttr(tag, 'data-variant')) +
                 ' alt="' + escapeAttr(iconTitle) + '" />'
@@ -117,16 +131,18 @@
             var stroke = readAttr(tag, 'data-stroke') || '2';
             var size = readAttr(tag, 'data-size');
             var iconTitle = readAttr(tag, 'data-title');
+            var hex = storedHex(color, readAttr(tag, 'data-hex'));
 
             return (
                 '<span class="wpicons-inline"' +
                 ' data-src="' + src + '"' +
-                ' style="' + previewStyle(src, color, size) + '"' +
+                ' style="' + previewStyle(src, color, size, hex) + '"' +
                 ' data-library="' + escapeAttr(library) + '"' +
                 ' data-name="' + escapeAttr(name) + '"' +
                 ' data-color="' + escapeAttr(color) + '"' +
                 ' data-stroke="' + escapeAttr(stroke) + '"' +
                 optionalAttr('data-size', size) +
+                optionalAttr('data-hex', hex) +
                 optionalAttr('data-title', iconTitle) +
                 optionalAttr('data-variant', readAttr(tag, 'data-variant')) +
                 '></span>'

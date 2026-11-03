@@ -8,13 +8,13 @@ their owners. The icon licenses cover the artwork only, not the trademarks. Usin
 endorsement; follow the owner's brand guidelines. Logos with incompatible terms are excluded, see
 `config/icon-exclusions.json`.
 
-| Library | npm package | Bundled version | License | File |
-| --- | --- | --- | --- | --- |
-| Lucide | `lucide-static` | 1.61.0 | ISC | lucide.txt |
-| Material Symbols | `@material-symbols/svg-400` | 0.48.1 | Apache-2.0 | material-symbols.txt |
-| Simple Icons | `simple-icons` | 16.36.0 | CC0-1.0 | simple-icons.txt, simple-icons-disclaimer.txt, simple-icons-icon-licenses.md |
-| Phosphor | `@phosphor-icons/core` | 2.1.1 | MIT | phosphor.txt |
-| Tabler Icons | `@tabler/icons` | 3.50.0 | MIT | tabler.txt |
-| Heroicons | `heroicons` | 2.2.0 | MIT | heroicons.txt |
-| Ionicons | `ionicons` | 8.1.0 | MIT | ionicons.txt |
-| Octicons | `@primer/octicons` | 19.42.0 | MIT | octicons.txt |
+| Library          | npm package                 | Bundled version | License    | File                                                                         |
+| ---------------- | --------------------------- | --------------- | ---------- | ---------------------------------------------------------------------------- |
+| Lucide           | `lucide-static`             | 1.61.0          | ISC        | lucide.txt                                                                   |
+| Material Symbols | `@material-symbols/svg-400` | 0.48.1          | Apache-2.0 | material-symbols.txt                                                         |
+| Simple Icons     | `simple-icons`              | 16.36.0         | CC0-1.0    | simple-icons.txt, simple-icons-disclaimer.txt, simple-icons-icon-licenses.md |
+| Phosphor         | `@phosphor-icons/core`      | 2.1.1           | MIT        | phosphor.txt                                                                 |
+| Tabler Icons     | `@tabler/icons`             | 3.50.0          | MIT        | tabler.txt                                                                   |
+| Heroicons        | `heroicons`                 | 2.2.0           | MIT        | heroicons.txt                                                                |
+| Ionicons         | `ionicons`                  | 8.1.0           | MIT        | ionicons.txt                                                                 |
+| Octicons         | `@primer/octicons`          | 19.42.0         | MIT        | octicons.txt                                                                 |

@@ -212,6 +212,7 @@ registerFormatType(FORMAT_NAME, {
         library: 'data-library',
         iconName: 'data-name',
         color: 'data-color',
+        hex: 'data-hex',
         stroke: 'data-stroke',
         size: 'data-size',
         title: 'data-title',

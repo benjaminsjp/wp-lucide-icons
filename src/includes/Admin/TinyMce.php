@@ -22,7 +22,13 @@ class TinyMce
      */
     public function registerPlugin(array $plugins): array
     {
-        $plugins['wpicons'] = WP_ICONS__URL . 'src/assets/js/tinymce/plugin.js?ver=' . WP_ICONS__VERSION;
+        $path = WP_ICONS__PATH . 'src/assets/js/tinymce/plugin.js';
+        $url = WP_ICONS__URL . 'src/assets/js/tinymce/plugin.js';
+        if (is_readable($path)) {
+            $url .= '?ver=' . date('ymd-Gis', filemtime($path));
+        }
+
+        $plugins['wpicons'] = $url;
 
         return $plugins;
     }
@@ -55,7 +61,7 @@ class TinyMce
      */
     public function beforeInit(array $init): array
     {
-        $extra = 'img[class|src|alt|title|width|height|style|data-src|data-library|data-name|data-color|data-stroke|data-size|data-title|data-variant],span[class|style|data-src|data-library|data-name|data-color|data-stroke|data-size|data-title|data-variant]';
+        $extra = 'img[class|src|alt|title|width|height|style|data-src|data-library|data-name|data-color|data-hex|data-stroke|data-size|data-title|data-variant],span[class|style|data-src|data-library|data-name|data-color|data-hex|data-stroke|data-size|data-title|data-variant]';
         if (empty($init['extended_valid_elements'])) {
             $init['extended_valid_elements'] = $extra;
         } else {
