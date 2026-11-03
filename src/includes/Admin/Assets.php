@@ -181,6 +181,7 @@ class Assets
                 'stroke' => $settings['default_stroke'],
             ],
             'themeColors' => $this->themeColors(),
+            'licensesUrl' => current_user_can('manage_options') ? Settings::licensesUrl() : '',
         ];
     }
 

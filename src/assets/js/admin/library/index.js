@@ -1,8 +1,19 @@
-import { createRoot, render, useEffect, useMemo, useState } from '@wordpress/element';
+import { createRoot, render, useEffect, useMemo, useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import IconPicker from '../../picker/IconPicker';
 import LucideSvg from '../../picker/icons';
-import { fetchIcon, fetchLibraries } from '../../picker/api';
+import { BrandNotice, BrandSwatch, Segmented, StyleControl } from '../../picker/IconStyleControls';
+import { usePreviewBackdrop } from '../../picker/contrast';
+import { fetchIcon } from '../../picker/api';
+import {
+    brandPaint,
+    LibraryGlyph,
+    libraryVariants,
+    resolveVariant,
+    supportsStrokeFor,
+    useLibraries,
+    variantLabel,
+} from '../../picker/libraries';
 
 const pluginDefaults = window.WPIconsAdmin?.defaults || {
     library: 'lucide',
@@ -11,7 +22,7 @@ const pluginDefaults = window.WPIconsAdmin?.defaults || {
     stroke: 2,
 };
 
-function paintIcon(svg, { size, color, stroke, supportsStroke }) {
+function paintIcon(svg, { size, color, hex, stroke, supportsStroke }) {
     if (!svg || typeof DOMParser === 'undefined') {
         return svg || '';
     }
@@ -26,7 +37,7 @@ function paintIcon(svg, { size, color, stroke, supportsStroke }) {
     root.setAttribute('width', pixels);
     root.setAttribute('height', pixels);
 
-    const paint = color || 'currentColor';
+    const paint = brandPaint(color, hex) || color || 'currentColor';
     const strokeAttr = root.getAttribute('stroke');
     const fill = root.getAttribute('fill');
     if (strokeAttr && strokeAttr !== 'none') {
@@ -34,6 +45,11 @@ function paintIcon(svg, { size, color, stroke, supportsStroke }) {
     }
     if (fill && fill !== 'none') {
         root.setAttribute('fill', paint);
+    }
+    if (paint !== 'currentColor') {
+        root.setAttribute('style', `color:${paint}`);
+    } else {
+        root.removeAttribute('style');
     }
     if (supportsStroke && root.hasAttribute('stroke-width')) {
         root.setAttribute('stroke-width', String(stroke ?? 2));
@@ -46,6 +62,10 @@ function humanizeIconName(name) {
     return String(name || '')
         .replace(/[-_]+/g, ' ')
         .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function shortcodeValue(value) {
+    return String(value ?? '').replace(/["\]\[]/g, '');
 }
 
 function RangeField({ id, label, hint, value, min, max, step = 1, onChange }) {
@@ -104,75 +124,95 @@ function RangeField({ id, label, hint, value, min, max, step = 1, onChange }) {
 }
 
 function LibraryApp() {
+    const { libraries } = useLibraries();
     const [library, setLibrary] = useState(pluginDefaults.library);
-    const [name, setName] = useState('');
+    const [selected, setSelected] = useState(null);
+    const [variants, setVariants] = useState({});
     const [size, setSize] = useState(pluginDefaults.size);
     const [color, setColor] = useState(pluginDefaults.color);
+    const [customColor, setCustomColor] = useState('#1e1e1e');
     const [stroke, setStroke] = useState(pluginDefaults.stroke);
-    const [useCurrentColor, setUseCurrentColor] = useState(true);
-    const [supportsStroke, setSupportsStroke] = useState(true);
-    const [libraryLabel, setLibraryLabel] = useState('');
-    const [sourceSvg, setSourceSvg] = useState('');
     const [copied, setCopied] = useState('');
 
+    const selectedLibrary = libraries.find((item) => item.id === selected?.library);
+    const browseLibrary = libraries.find((item) => item.id === library);
+    const styleVariants = useMemo(() => {
+        const map = {};
+        libraries.forEach((item) => {
+            map[item.id] = resolveVariant(item, variants[item.id]);
+        });
+        return map;
+    }, [libraries, variants]);
+    const controlLibrary = selectedLibrary || browseLibrary;
+    const variant = controlLibrary ? resolveVariant(controlLibrary, variants[controlLibrary.id]) : '';
+    const selectedVariant = selectedLibrary ? resolveVariant(selectedLibrary, variants[selectedLibrary.id]) : '';
+    const supportsStroke = supportsStrokeFor(selectedLibrary, selectedVariant);
+    const brandColors = Boolean(selectedLibrary?.brandColors);
+    const isBrandColor = brandColors && color === 'brand';
+    const useCurrentColor = color === 'currentColor';
+    const effectiveColor = isBrandColor ? 'brand' : (useCurrentColor ? 'currentColor' : customColor);
+
     const shortcode = useMemo(() => {
+        if (!selected) {
+            return '';
+        }
         const attrs = [
-            `library="${library}"`,
-            `name="${name}"`,
-            `size="${size}"`,
-            `color="${useCurrentColor ? 'currentColor' : color}"`,
+            `library="${shortcodeValue(selected.library)}"`,
+            `name="${shortcodeValue(selected.name)}"`,
         ];
+        if (selectedVariant && selectedLibrary?.variantParam) {
+            attrs.push(`${selectedLibrary.variantParam}="${shortcodeValue(selectedVariant)}"`);
+        }
+        attrs.push(`size="${shortcodeValue(size)}"`);
+        attrs.push(`color="${shortcodeValue(effectiveColor)}"`);
         if (supportsStroke) {
-            attrs.push(`stroke="${stroke}"`);
+            attrs.push(`stroke="${shortcodeValue(stroke)}"`);
         }
         return `[wp_icon ${attrs.join(' ')}]`;
-    }, [library, name, size, color, stroke, useCurrentColor, supportsStroke]);
+    }, [selected, selectedLibrary, selectedVariant, size, effectiveColor, stroke, supportsStroke]);
 
-    const preview = useMemo(() => paintIcon(sourceSvg, {
+    const preview = useMemo(() => paintIcon(selected?.svg || '', {
         size,
-        color: useCurrentColor ? 'currentColor' : color,
+        color: effectiveColor,
+        hex: selected?.hex,
         stroke,
         supportsStroke,
-    }), [sourceSvg, size, color, stroke, useCurrentColor, supportsStroke]);
+    }), [selected?.svg, selected?.hex, size, effectiveColor, stroke, supportsStroke]);
 
-    useEffect(() => {
-        fetchLibraries()
-            .then((data) => {
-                const current = (data.libraries || []).find((item) => item.id === library);
-                setSupportsStroke(Boolean(current?.supports?.includes('stroke')));
-                setLibraryLabel(current?.label || '');
-            })
-            .catch(() => {});
-    }, [library]);
+    // Preview chip when the displayed color (brand or custom) has < 3:1 contrast with the preview.
+    const previewGlyphRef = useRef(null);
+    const previewBackdrop = usePreviewBackdrop(previewGlyphRef, selected?.name ? preview : '');
 
+    // Re-load the selected icon when its style changes.
     useEffect(() => {
-        if (!name || sourceSvg) {
+        if (!selected?.name || selected.svg) {
             return undefined;
         }
 
         let cancelled = false;
         fetchIcon({
-            library,
-            name,
+            library: selected.library,
+            name: selected.name,
             size: 24,
             color: 'currentColor',
             stroke: 2,
+            variant: selectedVariant,
         })
             .then((data) => {
                 if (!cancelled && data.svg) {
-                    setSourceSvg(data.svg);
+                    setSelected((current) => (
+                        current && current.name === data.name && current.library === data.library
+                            ? { ...current, svg: data.svg }
+                            : current
+                    ));
                 }
             })
-            .catch(() => {
-                if (!cancelled) {
-                    setSourceSvg('');
-                }
-            });
+            .catch(() => {});
 
         return () => {
             cancelled = true;
         };
-    }, [library, name, sourceSvg]);
+    }, [selected?.library, selected?.name, selected?.svg, selectedVariant]);
 
     async function copyText(text, key) {
         try {
@@ -184,14 +224,15 @@ function LibraryApp() {
         }
     }
 
-    const hasIcon = Boolean(name);
-    const colorLabel = useCurrentColor ? 'currentColor' : color;
+    const hasIcon = Boolean(selected?.name);
+    const variantName = libraryVariants(selectedLibrary).find((option) => option.id === selectedVariant)?.label;
     const caption = [
         /* translators: %s: icon size in pixels */
         sprintf(__('%s px', 'wpicons'), size),
+        variantName ? variantName.toLowerCase() : null,
         /* translators: %s: stroke width */
         supportsStroke ? sprintf(__('stroke %s', 'wpicons'), stroke) : null,
-        colorLabel,
+        isBrandColor && selected?.hex ? `#${String(selected.hex).toUpperCase()}` : effectiveColor,
     ].filter(Boolean).join(' \u00b7 ');
 
     return (
@@ -200,15 +241,24 @@ function LibraryApp() {
                 <IconPicker
                     variant="library"
                     library={library}
-                    name={name}
-                    onLibraryChange={(nextLibrary) => {
-                        setLibrary(nextLibrary);
-                        setSourceSvg('');
-                    }}
+                    name={selected?.name || ''}
+                    selectedLibrary={selected?.library || ''}
+                    styleVariants={styleVariants}
+                    colorModes={selectedLibrary?.brandColors ? { [selectedLibrary.id]: isBrandColor ? 'brand' : 'other' } : {}}
+                    onLibraryChange={setLibrary}
                     onSelect={(icon) => {
-                        setLibrary(icon.library);
-                        setName(icon.name);
-                        setSourceSvg(icon.svg || '');
+                        const nextLibrary = libraries.find((item) => item.id === icon.library);
+                        if (nextLibrary && icon.library !== selected?.library) {
+                            if (typeof nextLibrary.defaultStroke === 'number') {
+                                setStroke(nextLibrary.defaultStroke);
+                            }
+                            if (nextLibrary.brandColors) {
+                                setColor(nextLibrary.defaultColor === 'brand' ? 'brand' : 'currentColor');
+                            } else if (color === 'brand') {
+                                setColor('currentColor');
+                            }
+                        }
+                        setSelected(icon);
                     }}
                 />
             </section>
@@ -220,18 +270,26 @@ function LibraryApp() {
                     <>
                         <div className="wpicons__library__preview">
                             <div
+                                ref={previewGlyphRef}
                                 className="wpicons__library__preview-glyph"
+                                data-low-contrast={previewBackdrop || undefined}
                                 dangerouslySetInnerHTML={{ __html: preview }}
                             />
                             <span className="wpicons__library__preview-caption">{caption}</span>
                         </div>
                         <div className="wpicons__library__name-row">
                             <div className="wpicons__library__name">
-                                <span className="wpicons__library__name-title">{humanizeIconName(name)}</span>
-                                <code className="wpicons__library__name-slug">{name}</code>
+                                <span className="wpicons__library__name-title">{selected.title || humanizeIconName(selected.name)}</span>
+                                <code className="wpicons__library__name-slug">{selected.name}</code>
                             </div>
-                            {libraryLabel ? <span className="wpicons__chip">{libraryLabel}</span> : null}
+                            {selectedLibrary ? (
+                                <span className="wpicons__lib-chip">
+                                    <LibraryGlyph library={selectedLibrary} size={12} />
+                                    {selectedLibrary.label}
+                                </span>
+                            ) : null}
                         </div>
+                        {selected.brand ? <BrandNotice guidelines={selected.guidelines} /> : null}
                     </>
                 ) : (
                     <div className="wpicons__library__empty">
@@ -247,6 +305,20 @@ function LibraryApp() {
                 <hr className="wpicons__divider" />
                 <fieldset className="wpicons__library__controls" disabled={!hasIcon}>
                     <legend className="screen-reader-text">{__('Icon options', 'wpicons')}</legend>
+                    <StyleControl
+                        label={variantLabel(controlLibrary)}
+                        options={libraryVariants(controlLibrary)}
+                        value={variant}
+                        onChange={(next) => {
+                            if (!controlLibrary) {
+                                return;
+                            }
+                            setVariants((current) => ({ ...current, [controlLibrary.id]: next }));
+                            if (selected?.library === controlLibrary.id) {
+                                setSelected((current) => (current ? { ...current, svg: '' } : current));
+                            }
+                        }}
+                    />
                     <RangeField
                         id="wpicons-library-size"
                         label={__('Size', 'wpicons')}
@@ -256,41 +328,63 @@ function LibraryApp() {
                         max={256}
                         onChange={setSize}
                     />
-                    <div className="wpicons__field">
-                        <label className="wpicons__toggle wpicons__toggle--between">
-                            <span className="wpicons__toggle__label">{__('Inherit text color', 'wpicons')}</span>
-                            <input
-                                type="checkbox"
-                                className="wpicons__toggle__input"
-                                checked={useCurrentColor}
-                                onChange={(event) => {
-                                    const checked = event.target.checked;
-                                    setUseCurrentColor(checked);
-                                    if (checked) {
+                    {brandColors ? (
+                        <div className="wpicons__field">
+                            <Segmented
+                                label={__('Color', 'wpicons')}
+                                options={[
+                                    { id: 'brand', label: __('Brand', 'wpicons') },
+                                    { id: 'current', label: __('Inherit', 'wpicons') },
+                                    { id: 'custom', label: __('Custom', 'wpicons') },
+                                ]}
+                                value={isBrandColor ? 'brand' : (useCurrentColor ? 'current' : 'custom')}
+                                onChange={(mode) => {
+                                    if (mode === 'brand') {
+                                        setColor('brand');
+                                    } else if (mode === 'current') {
                                         setColor('currentColor');
-                                    } else if (color === 'currentColor') {
-                                        setColor('#1e1e1e');
+                                    } else {
+                                        if (selected?.hex) {
+                                            setCustomColor(`#${String(selected.hex).toLowerCase()}`);
+                                        }
+                                        setColor('custom');
                                     }
                                 }}
                             />
-                            <span className="wpicons__toggle__track" aria-hidden="true" />
-                        </label>
-                        <p className="wpicons__help">{__('Uses currentColor to match the surrounding text.', 'wpicons')}</p>
-                        {!useCurrentColor ? (
-                            <div className="wpicons__field wpicons__field--nested">
-                                <label className="wpicons__field__label" htmlFor="wpicons-library-color">
-                                    {__('Color', 'wpicons')}
-                                </label>
+                            {isBrandColor && selected?.hex ? (
+                                <BrandSwatch hex={selected.hex} />
+
+                            ) : null}
+                        </div>
+                    ) : (
+                        <div className="wpicons__field">
+                            <label className="wpicons__toggle wpicons__toggle--between">
+                                <span className="wpicons__toggle__label">{__('Inherit text color', 'wpicons')}</span>
                                 <input
-                                    id="wpicons-library-color"
-                                    type="text"
-                                    className="wpicons__input wpicons__input--mono"
-                                    value={color}
-                                    onChange={(event) => setColor(event.target.value)}
+                                    type="checkbox"
+                                    className="wpicons__toggle__input"
+                                    checked={useCurrentColor}
+                                    onChange={(event) => setColor(event.target.checked ? 'currentColor' : 'custom')}
                                 />
-                            </div>
-                        ) : null}
-                    </div>
+                                <span className="wpicons__toggle__track" aria-hidden="true" />
+                            </label>
+                            <p className="wpicons__help">{__('Uses currentColor to match the surrounding text.', 'wpicons')}</p>
+                        </div>
+                    )}
+                    {!useCurrentColor && !isBrandColor ? (
+                        <div className="wpicons__field wpicons__field--nested">
+                            <label className="wpicons__field__label" htmlFor="wpicons-library-color">
+                                {__('Color', 'wpicons')}
+                            </label>
+                            <input
+                                id="wpicons-library-color"
+                                type="text"
+                                className="wpicons__input wpicons__input--mono"
+                                value={customColor}
+                                onChange={(event) => setCustomColor(event.target.value)}
+                            />
+                        </div>
+                    ) : null}
                     {supportsStroke ? (
                         <RangeField
                             id="wpicons-library-stroke"

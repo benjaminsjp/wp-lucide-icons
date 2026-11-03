@@ -40,7 +40,7 @@
 
     function previewStyle(src, color, size) {
         var style = '--wpicons-src:url(&quot;' + src + '&quot;)';
-        var resolved = previewColor(color);
+        var resolved = String(color || '').toLowerCase() === 'brand' ? '' : previewColor(color);
         if (resolved) {
             style += ';background-color:' + resolved;
         }
@@ -94,6 +94,7 @@
                 ' data-stroke="' + escapeAttr(stroke) + '"' +
                 optionalAttr('data-size', size) +
                 optionalAttr('data-title', iconTitle) +
+                optionalAttr('data-variant', readAttr(tag, 'data-variant')) +
                 ' alt="' + escapeAttr(iconTitle) + '" />'
             );
         });
@@ -127,6 +128,7 @@
                 ' data-stroke="' + escapeAttr(stroke) + '"' +
                 optionalAttr('data-size', size) +
                 optionalAttr('data-title', iconTitle) +
+                optionalAttr('data-variant', readAttr(tag, 'data-variant')) +
                 '></span>'
             );
         });
@@ -148,6 +150,7 @@
             stroke: node ? editor.dom.getAttrib(node, 'data-stroke') : '',
             size: node ? editor.dom.getAttrib(node, 'data-size') : '',
             title: node ? editor.dom.getAttrib(node, 'data-title') : '',
+            variant: node ? editor.dom.getAttrib(node, 'data-variant') : '',
             onSelect: function (html) {
                 if (!html) {
                     return;

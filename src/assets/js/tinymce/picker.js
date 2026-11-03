@@ -41,6 +41,7 @@ function PickerApp({
     initialStroke,
     initialSize,
     initialTitle,
+    initialVariant,
     onSelect,
 }) {
     const defaults = pluginDefaults();
@@ -53,6 +54,7 @@ function PickerApp({
             name: icon.name,
             svg: icon.svg,
             stroke: icon.stroke,
+            variant: icon.variant,
         });
         closePicker();
         if (!svg) {
@@ -67,6 +69,8 @@ function PickerApp({
             stroke: icon.stroke,
             size: icon.size,
             title: icon.title,
+            variant: icon.variant,
+            hex: icon.hex,
         }));
     };
 
@@ -74,6 +78,7 @@ function PickerApp({
         <IconPickerModal
             library={library}
             name={initialName || ''}
+            variant={initialVariant || ''}
             size={hasIcon ? initialSize : (defaults.size || 24)}
             color={initialColor || defaults.color || 'currentColor'}
             stroke={initialStroke === undefined || initialStroke === null || initialStroke === ''
@@ -98,6 +103,7 @@ window.WPIcons.openPicker = function ({
     stroke,
     size,
     title,
+    variant,
 } = {}) {
     mountPicker(
         <PickerApp
@@ -107,6 +113,7 @@ window.WPIcons.openPicker = function ({
             initialStroke={stroke}
             initialSize={size}
             initialTitle={title}
+            initialVariant={variant}
             onSelect={typeof onSelect === 'function' ? onSelect : () => {}}
         />,
     );

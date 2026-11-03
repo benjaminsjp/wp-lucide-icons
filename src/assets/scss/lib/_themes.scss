@@ -9,7 +9,7 @@ $themes: (
         background: oklch(98.511% 0.00011 271.152),
         foreground: oklch(20.463% 0.00002 271.152),
         primary: oklch(70.542% 0.14633 296.12),
-        primary-foreground: oklch(100% 0.00011 271.152),
+        primary-foreground: #14101f, // Text on lavender (primary) is #14101F in both themes.
         secondary: oklch(0.95 0.02 275.64),
         secondary-foreground: oklch(0.2 0 0),
         accent: oklch(100% 0.00011 271.152),
@@ -30,7 +30,7 @@ $themes: (
         background: oklch(21.825% 0.02359 295.836),
         foreground: oklch(100% 0.00011 271.152),
         primary: oklch(70.542% 0.14633 296.12),
-        primary-foreground: oklch(18.608% 0.03051 295.536),
+        primary-foreground: #14101f,
         secondary: oklch(29.313% 0.00003 271.152),
         secondary-foreground: oklch(100% 0.00011 271.152),
         accent: oklch(87.762% 0.06474 290.831),

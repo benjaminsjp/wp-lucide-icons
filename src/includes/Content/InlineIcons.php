@@ -47,6 +47,7 @@ class InlineIcons
             $tags[$tag]['data-stroke'] = true;
             $tags[$tag]['data-size'] = true;
             $tags[$tag]['data-title'] = true;
+            $tags[$tag]['data-variant'] = true;
         }
 
         return $tags;
@@ -102,6 +103,7 @@ class InlineIcons
             'name' => $name,
             'color' => (string) ($processor->get_attribute('data-color') ?: 'currentColor'),
             'stroke' => $processor->get_attribute('data-stroke'),
+            'variant' => (string) $processor->get_attribute('data-variant'),
             'class' => 'wpicons-inline',
             'title' => trim((string) $processor->get_attribute('data-title')),
         ];
@@ -124,7 +126,10 @@ class InlineIcons
             return $svg;
         }
 
-        $processor->set_attribute('style', 'width:' . $size . 'px;height:' . $size . 'px');
+        // Keep an existing style (an explicit icon color is set there).
+        $existing = trim((string) $processor->get_attribute('style'));
+        $sizeStyle = 'width:' . $size . 'px;height:' . $size . 'px';
+        $processor->set_attribute('style', $existing === '' ? $sizeStyle : rtrim($existing, '; ') . ';' . $sizeStyle);
         $updated = $processor->get_updated_html();
 
         return \is_string($updated) && $updated !== '' ? $updated : $svg;

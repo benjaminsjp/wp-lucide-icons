@@ -55,7 +55,7 @@ class TinyMce
      */
     public function beforeInit(array $init): array
     {
-        $extra = 'img[class|src|alt|title|width|height|style|data-src|data-library|data-name|data-color|data-stroke|data-size|data-title],span[class|style|data-src|data-library|data-name|data-color|data-stroke|data-size|data-title]';
+        $extra = 'img[class|src|alt|title|width|height|style|data-src|data-library|data-name|data-color|data-stroke|data-size|data-title|data-variant],span[class|style|data-src|data-library|data-name|data-color|data-stroke|data-size|data-title|data-variant]';
         if (empty($init['extended_valid_elements'])) {
             $init['extended_valid_elements'] = $extra;
         } else {

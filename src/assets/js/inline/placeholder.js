@@ -67,7 +67,7 @@ export function iconMaskStyle(url) {
 export function iconPreviewStyle(url, color, size) {
     const parts = [iconMaskStyle(url)];
     const resolved = safeColor(color);
-    if (resolved !== 'currentColor') {
+    if (resolved !== 'currentColor' && resolved !== 'brand') {
         parts.push(`background-color:${resolved}`);
     }
     const pixels = explicitSize(size);
@@ -92,6 +92,8 @@ export function placeholderAttributes({
     stroke,
     size,
     title,
+    variant = '',
+    hex = '',
     keepTypedColor = false,
     previousStyle = '',
 }) {
@@ -109,8 +111,15 @@ export function placeholderAttributes({
             ? previousPreviewColor(previousStyle)
             : safe;
     }
+    // Simple Icons "brand" color: stored as "brand" (rendered with the official color on the
+    // front end), previewed in the editor with the brand hex.
+    if (String(color ?? '').trim().toLowerCase() === 'brand') {
+        resolvedColor = 'brand';
+        paint = /^[0-9a-f]{6}$/i.test(String(hex || '')) ? `#${hex}` : previousPreviewColor(previousStyle);
+    }
+    const resolvedVariant = /^[a-z0-9-]{1,20}$/.test(String(variant || '')) ? String(variant) : '';
 
-    return {
+    const attributes = {
         url: resolvedUrl,
         src: TRANSPARENT_SRC,
         alt: resolvedTitle,
@@ -122,6 +131,11 @@ export function placeholderAttributes({
         size: resolvedSize,
         title: resolvedTitle,
     };
+    if (resolvedVariant) {
+        attributes.variant = resolvedVariant;
+    }
+
+    return attributes;
 }
 
 export function placeholderHtml(icon) {
@@ -139,11 +153,12 @@ export function placeholderHtml(icon) {
         ` data-stroke="${escapeAttr(attrs.stroke)}"` +
         optionalAttr('data-size', attrs.size) +
         optionalAttr('data-title', attrs.title) +
+        optionalAttr('data-variant', attrs.variant) +
         ` alt="${escapeAttr(attrs.alt)}" />`
     );
 }
 
-export async function resolveMaskSvg({ library, name, svg, stroke }) {
+export async function resolveMaskSvg({ library, name, svg, stroke, variant = '' }) {
     const strokeValue = Number(stroke ?? 2);
     if (svg && strokeValue === 2) {
         return svg;
@@ -156,6 +171,7 @@ export async function resolveMaskSvg({ library, name, svg, stroke }) {
             size: 24,
             color: 'currentColor',
             stroke: strokeValue,
+            variant,
         });
         return data.svg || svg || '';
     } catch (error) {
@@ -194,6 +210,7 @@ export function migrateInlineIconHtml(html) {
             ` data-stroke="${escapeAttr(readAttr(open, 'data-stroke') || String(defaults.stroke ?? 2))}"` +
             optionalAttr('data-size', explicitSize(size)) +
             optionalAttr('data-title', title) +
+            optionalAttr('data-variant', readAttr(open, 'data-variant')) +
             ` alt="${escapeAttr(title)}" />` +
             inner
         );

@@ -13,7 +13,9 @@
 
     function applyPresentation(node) {
         var color = node.getAttribute('data-color') || '';
-        if (color && color.toLowerCase() !== 'currentcolor') {
+        if (color.toLowerCase() === 'brand') {
+            // Brand color (Simple Icons) is already in the inline style.
+        } else if (color && color.toLowerCase() !== 'currentcolor') {
             node.style.setProperty('background-color', color);
         } else {
             node.style.removeProperty('background-color');

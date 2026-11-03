@@ -3,7 +3,7 @@
 const { spawnSync } = require('child_process');
 const path = require('path');
 
-const scripts = ['sync-lucide-icons.js', 'sync-material-symbols.js'];
+const scripts = ['sync-lucide-icons.js', 'sync-material-symbols.js', 'sync-packages.js'];
 const extraArgs = process.argv.slice(2);
 
 for (const script of scripts) {

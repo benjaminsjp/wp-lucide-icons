@@ -16,7 +16,7 @@ const defaults = window.WPIconsAdmin?.defaults || {
 };
 
 export default function Edit({ attributes, setAttributes }) {
-    const { library, name, size, color, strokeWidth, title } = attributes;
+    const { library, name, size, color, strokeWidth, title, variant } = attributes;
     const [pickerOpen, setPickerOpen] = useState(false);
     const [preview, setPreview] = useState('');
 
@@ -37,6 +37,7 @@ export default function Edit({ attributes, setAttributes }) {
             size,
             color: color || 'currentColor',
             stroke: strokeWidth,
+            variant: variant || '',
         })
             .then((data) => {
                 if (!cancelled) {
@@ -52,7 +53,7 @@ export default function Edit({ attributes, setAttributes }) {
         return () => {
             cancelled = true;
         };
-    }, [library, name, size, color, strokeWidth]);
+    }, [library, name, size, color, strokeWidth, variant]);
 
     return (
         <>
@@ -87,6 +88,7 @@ export default function Edit({ attributes, setAttributes }) {
                 <IconPickerModal
                     library={library || defaults.library}
                     name={name}
+                    variant={variant || ''}
                     size={size || defaults.size}
                     color={color ?? defaults.color}
                     stroke={strokeWidth ?? defaults.stroke}
@@ -102,6 +104,7 @@ export default function Edit({ attributes, setAttributes }) {
                             color: icon.color || defaults.color,
                             strokeWidth: icon.stroke ?? defaults.stroke,
                             title: icon.title || '',
+                            variant: icon.variant || '',
                         });
                         setPickerOpen(false);
                     }}

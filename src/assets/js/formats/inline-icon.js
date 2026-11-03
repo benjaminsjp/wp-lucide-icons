@@ -21,6 +21,7 @@ function draftFromAttributes(attrs) {
         color: attrs?.color || defaults.color || 'currentColor',
         stroke: Number(attrs?.stroke ?? defaults.stroke ?? 2),
         title: attrs?.title || '',
+        variant: attrs?.variant || '',
     };
 }
 
@@ -137,6 +138,7 @@ function Edit({
             name: icon.name,
             svg: icon.svg,
             stroke: icon.stroke,
+            variant: icon.variant,
         });
         if (!svg) {
             awaitingSavedRef.current = false;
@@ -152,6 +154,8 @@ function Edit({
             stroke: icon.stroke,
             size: icon.size,
             title: icon.title,
+            variant: icon.variant,
+            hex: icon.hex,
         });
         const index = editIndexRef.current;
         const current = valueRef.current;
@@ -179,6 +183,7 @@ function Edit({
                 <IconPickerModal
                     library={library}
                     name={pickerName}
+                    variant={pickerOptions.variant}
                     size={pickerOptions.size}
                     color={pickerOptions.color}
                     stroke={pickerOptions.stroke}
@@ -210,6 +215,7 @@ registerFormatType(FORMAT_NAME, {
         stroke: 'data-stroke',
         size: 'data-size',
         title: 'data-title',
+        variant: 'data-variant',
     },
     edit: Edit,
 });

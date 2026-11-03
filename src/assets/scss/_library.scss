@@ -359,6 +359,67 @@ $mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation 
     }
 }
 
+// Rail layout (L1/L2): library rail on the left, search + results on the right.
+.#{$p}__admin .#{$p}__library__picker.#{$p}__panel {
+    padding: 0;
+    overflow: hidden;
+}
+
+.#{$p}__admin .#{$p}__picker--library {
+    display: grid;
+    grid-template-columns: 221px minmax(0, 1fr);
+    gap: 0;
+    min-height: min(810px, calc(100vh - 88px));
+
+    .#{$p}__rail {
+        box-sizing: border-box;
+        min-width: 0;
+        max-height: min(810px, calc(100vh - 88px));
+        padding: 16px 12px;
+        overflow: auto;
+        border-right: 1px solid t(border);
+        scrollbar-width: thin;
+    }
+
+    .#{$p}__liblist__filter input {
+        height: 34px;
+        border-color: t(field-border);
+        font-size: 13px;
+    }
+
+    .#{$p}__picker__main {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        min-width: 0;
+        padding: 20px;
+    }
+
+    .#{$p}__picker__group-header {
+        background: t(card);
+    }
+
+    .#{$p}__picker__group-grid {
+        grid-template-columns: repeat(auto-fill, minmax(62px, 1fr));
+        gap: 8px;
+    }
+
+    .#{$p}__picker__item.is-brand .#{$p}__picker__glyph {
+        position: relative;
+    }
+}
+
+@media (max-width: 782px) {
+    .#{$p}__admin .#{$p}__picker--library {
+        grid-template-columns: 1fr;
+
+        .#{$p}__rail {
+            max-height: 240px;
+            border-right: 0;
+            border-bottom: 1px solid t(border);
+        }
+    }
+}
 @media (max-width: 1100px) {
     .#{$p}__admin .#{$p}__library {
         &__app {

@@ -28,9 +28,14 @@ class Shortcode
                 'library' => $defaults['default_library'],
                 'name' => '',
                 'size' => (string) $defaults['default_size'],
-                'color' => $defaults['default_color'],
-                'stroke' => (string) $defaults['default_stroke'],
+                // Empty = the library's own default from Settings (Lucide: the global defaults, as before).
+                'color' => '',
+                'stroke' => '',
                 'width' => '',
+                // Library style: weight="bold" (Phosphor) or style="solid" (Tabler, Heroicons, Ionicons).
+                'weight' => '',
+                'style' => '',
+                'variant' => '',
                 'class' => '',
                 'title' => '',
             ],
@@ -38,7 +43,7 @@ class Shortcode
             'wp_icon'
         );
 
-        $stroke = $atts['stroke'] !== '' ? $atts['stroke'] : ($atts['width'] !== '' ? $atts['width'] : $defaults['default_stroke']);
+        $stroke = $atts['stroke'] !== '' ? $atts['stroke'] : $atts['width'];
 
         return (new Renderer())->fromAttributes([
             'library' => $atts['library'],
@@ -46,6 +51,7 @@ class Shortcode
             'size' => $atts['size'],
             'color' => $atts['color'],
             'stroke' => $stroke,
+            'variant' => $atts['variant'] !== '' ? $atts['variant'] : ($atts['weight'] !== '' ? $atts['weight'] : $atts['style']),
             'class' => $atts['class'],
             'title' => $atts['title'],
         ]);

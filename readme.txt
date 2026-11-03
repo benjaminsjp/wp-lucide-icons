@@ -1,6 +1,6 @@
 === WP Icons ===
 Contributors: kimlukas
-Tags: icons, svg, lucide, material symbols, block
+Tags: icons, svg, lucide, phosphor, block
 Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 8.1
@@ -8,7 +8,7 @@ Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Insert inline SVG icons from Lucide and Material Symbols with a block, a rich-text toolbar button, the classic editor, or a shortcode.
+Inline SVG icons from Lucide, Material Symbols, Phosphor, Tabler, Simple Icons and more, via a block, toolbar button, or shortcode.
 
 == Description ==
 
@@ -16,30 +16,29 @@ WP Icons lets you place icons from open-source icon libraries anywhere in WordPr
 
 = Features =
 
-* **Icon** block for the block editor, with library, icon, size, color, and stroke width (Lucide)
+* **Icon** block for the block editor, with library, icon, size, color, style or weight, and stroke width (stroke-based styles)
 * **Insert icon** on the paragraph, heading, and other rich-text toolbars. Inline icons follow the surrounding text size and color
 * **Insert icon** button in the classic editor (TinyMCE)
 * `[wp_icon]` shortcode, plus the legacy `[lucide_icon]` alias
 * Admin **Library** to browse icons, preview options, and copy a shortcode
-* **Settings** for default size, color, stroke width, and library, and for enabling each library
+* **Settings** for default size, color, and library, plus per-library style, stroke width, and color, and for enabling each library
 * Icon catalogs ship with the plugin. Optionally, a newer catalog can be downloaded in the background and cached on your site
 * Live preview in Flatsome UX Builder
 
 = Icon libraries =
 
-Bundled today:
+All bundled, at these versions:
 
-* **Lucide** (ISC; icons derived from Feather are MIT)
-* **Material Symbols**, Outlined style (Apache-2.0)
+* **Lucide** 1.61.0 (ISC; icons derived from Feather are MIT)
+* **Material Symbols** 0.48.1, Outlined style (Apache-2.0)
+* **Simple Icons** 16.36.0 (CC0-1.0 project license; brand logos are trademarks of their owners, and some icons carry other terms)
+* **Phosphor** 2.1.1 (MIT)
+* **Tabler Icons** 3.50.0 (MIT)
+* **Heroicons** 2.2.0 (MIT)
+* **Ionicons** 8.1.0 (MIT)
+* **Octicons** 19.42.0 (MIT; GitHub logos follow GitHub's logo guidelines)
 
-Planned (not in the plugin yet; the list may change):
-
-* Simple Icons (CC0-1.0 project license; brand logos are trademarks of their owners, and some icons carry other terms)
-* Phosphor (MIT)
-* Tabler Icons (MIT)
-* Heroicons (MIT)
-* Ionicons (MIT)
-* Octicons (MIT; GitHub logos follow GitHub's logo guidelines)
+Simple Icons under non-commercial, no-derivatives, AGPL, GPL-only, or custom licenses, and the GitHub and Copilot logos in Octicons, are left out.
 
 License links are listed under "Third-party libraries & licenses" below.
 
@@ -49,7 +48,7 @@ License links are listed under "Third-party libraries & licenses" below.
 
 `[wp_icon library="material-symbols" name="favorite" size="24" color="currentColor"]`
 
-Attributes: `library`, `name`, `size`, `color`, `stroke` (Lucide only), `class`, and `title`. Omitted attributes fall back to **WP Icons > Settings**. An empty `title` hides the icon from assistive technology.
+Attributes: `library`, `name`, `size`, `color` (a CSS color, or `brand` for Simple Icons), `stroke` (stroke-based styles), `weight` (Phosphor), `style` (Tabler, Heroicons, Ionicons), `class`, and `title`. Omitted attributes fall back to **WP Icons > Settings**. An empty `title` hides the icon from assistive technology.
 
 = External requests and privacy =
 
@@ -89,7 +88,7 @@ It downloads a newer published version of a library from the npm registry in the
 
 = Which icon libraries are included? =
 
-Lucide and Material Symbols (Outlined) today. Simple Icons, Phosphor, Tabler Icons, Heroicons, Ionicons, and Octicons are planned.
+Lucide, Material Symbols (Outlined), Simple Icons, Phosphor, Tabler Icons, Heroicons, Ionicons, and Octicons. You can turn each one on or off in **WP Icons > Settings**.
 
 = Can I use brand icons freely? =
 
@@ -119,6 +118,7 @@ Its settings, cached catalogs in `wp-content/uploads/wp-icons/`, transients, and
 = 2.0.0 - 2026-10-21 =
 * Added: Icon block with library, name, size, color, and Lucide stroke width.
 * Added: Material Symbols (Outlined) as a second bundled library.
+* Added: Simple Icons, Phosphor, Tabler Icons, Heroicons, Ionicons, and Octicons, with style, weight, and brand-color options and an all-libraries search in the icon picker.
 * Added: Admin Library browser and a top-level WP Icons menu.
 * Added: Settings for defaults and per-library source (plugin bundle or cached CDN).
 * Added: `[wp_icon]` shortcode with a `library` attribute.
@@ -170,9 +170,6 @@ Bundled:
 
 * Lucide - ISC License; icons derived from Feather are MIT. https://github.com/lucide-icons/lucide/blob/main/LICENSE
 * Material Symbols - Apache License 2.0. https://github.com/google/material-design-icons/blob/master/LICENSE
-
-Planned (not bundled yet):
-
 * Simple Icons - CC0-1.0 for the project. Brand logos are trademarks of their owners, and some icons carry other terms. https://github.com/simple-icons/simple-icons/blob/develop/LICENSE.md
 * Phosphor - MIT. https://github.com/phosphor-icons/core/blob/main/LICENSE
 * Tabler Icons - MIT. https://github.com/tabler/tabler-icons/blob/main/LICENSE

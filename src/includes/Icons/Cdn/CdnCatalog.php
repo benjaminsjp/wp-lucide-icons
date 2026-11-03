@@ -3,6 +3,9 @@
 namespace WPIcons\Icons\Cdn;
 
 use WPIcons\Admin\Settings;
+use WPIcons\Icons\Exclusions;
+use WPIcons\Icons\LibraryInterface;
+use WPIcons\Icons\Package\PackageLibrary;
 use WPIcons\Icons\Registry;
 use WPIcons\Icons\Svg;
 
@@ -10,10 +13,18 @@ if (!\defined('ABSPATH')) {
     exit;
 }
 
+/**
+ * "CDN (npm, cached)" source: downloads a library's npm package from registry.npmjs.org in the
+ * background (cron), extracts the SVGs and stores them in uploads/wp-icons/<library>.json.
+ * Front-end page views only ever read that local file.
+ */
 final class CdnCatalog
 {
     public const CRON_HOOK = 'wp_icons_refresh_cdn_catalogs';
     public const META_OPTION = 'wp_icons__cdn_meta';
+
+    /** @var array<string, array{variants: array<string, array<string, string>>, meta: array<string, array<string, string>>, viewBoxes: array<string, array<string, string>>}> */
+    private static array $cache = [];
 
     public function register(): void
     {
@@ -39,8 +50,15 @@ final class CdnCatalog
     /**
      * @return array<string, array{version: string, fetched_at: int, count: int, file: string}>
      */
-    public static function meta(): array
+    public static function meta(string $libraryId = '', string $name = ''): array
     {
+        if ($libraryId !== '') {
+            // Brand metadata for one icon (Simple Icons hex / guidelines from a newer package).
+            $entry = self::load($libraryId)['meta'][$name] ?? [];
+
+            return \is_array($entry) ? $entry : [];
+        }
+
         $stored = get_option(self::META_OPTION, []);
 
         return \is_array($stored) ? $stored : [];
@@ -62,17 +80,36 @@ final class CdnCatalog
         return isset($meta[$libraryId]['fetched_at']) ? (int) $meta[$libraryId]['fetched_at'] : null;
     }
 
+    public static function count(string $libraryId): int
+    {
+        $meta = self::meta();
+
+        return isset($meta[$libraryId]['count']) ? (int) $meta[$libraryId]['count'] : 0;
+    }
+
     /**
      * @return list<string>
      */
-    public static function names(string $libraryId): array
+    public static function names(string $libraryId, string $variant = '', bool $allVariants = false): array
     {
-        return array_keys(self::icons($libraryId));
+        $data = self::load($libraryId);
+        if (!$allVariants) {
+            return array_keys($data['variants'][$variant] ?? []);
+        }
+
+        $names = [];
+        foreach ($data['variants'] as $icons) {
+            foreach (array_keys($icons) as $name) {
+                $names[$name] = true;
+            }
+        }
+
+        return array_keys($names);
     }
 
-    public static function inner(string $libraryId, string $name): ?string
+    public static function inner(string $libraryId, string $name, string $variant = ''): ?string
     {
-        $icons = self::icons($libraryId);
+        $icons = self::load($libraryId)['variants'][$variant] ?? [];
         if (isset($icons[$name]) && \is_string($icons[$name])) {
             return $icons[$name];
         }
@@ -85,51 +122,80 @@ final class CdnCatalog
         return null;
     }
 
+    public static function viewBox(string $libraryId, string $name, string $variant = ''): ?string
+    {
+        $viewBox = self::load($libraryId)['viewBoxes'][$variant][$name] ?? null;
+
+        return \is_string($viewBox) ? $viewBox : null;
+    }
+
     /**
+     * Flat icon map for the library's default style (kept for callers that predate styles).
+     *
      * @return array<string, string>
      */
-    public static function icons(string $libraryId): array
+    public static function icons(string $libraryId, string $variant = ''): array
     {
-        static $cache = [];
-
-        if (isset($cache[$libraryId])) {
-            return $cache[$libraryId];
+        $data = self::load($libraryId);
+        if ($variant === '' && !isset($data['variants'][''])) {
+            $library = Registry::get($libraryId);
+            $variant = $library?->defaultVariant() ?? '';
         }
 
-        $meta = self::meta();
-        if (!isset($meta[$libraryId]['file']) || !\is_string($meta[$libraryId]['file'])) {
-            $cache[$libraryId] = [];
+        return $data['variants'][$variant] ?? [];
+    }
 
-            return $cache[$libraryId];
+    /**
+     * @return array{variants: array<string, array<string, string>>, meta: array<string, array<string, string>>, viewBoxes: array<string, array<string, string>>}
+     */
+    private static function load(string $libraryId): array
+    {
+        if (isset(self::$cache[$libraryId])) {
+            return self::$cache[$libraryId];
         }
 
-        $path = $meta[$libraryId]['file'];
-        if (!is_readable($path)) {
-            $cache[$libraryId] = [];
+        $empty = ['variants' => [], 'meta' => [], 'viewBoxes' => []];
+        $stored = get_option(self::META_OPTION, []);
+        $path = \is_array($stored) ? ($stored[$libraryId]['file'] ?? null) : null;
+        if (!\is_string($path) || !is_readable($path)) {
+            self::$cache[$libraryId] = $empty;
 
-            return $cache[$libraryId];
+            return $empty;
         }
 
         $json = file_get_contents($path);
-        if ($json === false) {
-            $cache[$libraryId] = [];
+        $decoded = $json === false ? null : json_decode($json, true);
+        if (!\is_array($decoded)) {
+            self::$cache[$libraryId] = $empty;
 
-            return $cache[$libraryId];
+            return $empty;
         }
 
-        $decoded = json_decode($json, true);
-        $icons = [];
-        if (\is_array($decoded) && isset($decoded['icons']) && \is_array($decoded['icons'])) {
-            foreach ($decoded['icons'] as $name => $inner) {
+        $data = $empty;
+        // Single-style libraries (Lucide, Material Symbols) keep the original flat "icons" format.
+        $variants = isset($decoded['variants']) && \is_array($decoded['variants'])
+            ? $decoded['variants']
+            : ['' => $decoded['icons'] ?? []];
+        foreach ($variants as $variant => $icons) {
+            if (!\is_string($variant) && !\is_int($variant)) {
+                continue;
+            }
+            foreach ((array) $icons as $name => $inner) {
                 if (\is_string($name) && \is_string($inner) && $inner !== '') {
-                    $icons[$name] = $inner;
+                    $data['variants'][(string) $variant][$name] = $inner;
                 }
             }
         }
+        if (isset($decoded['meta']) && \is_array($decoded['meta'])) {
+            $data['meta'] = $decoded['meta'];
+        }
+        if (isset($decoded['viewBoxes']) && \is_array($decoded['viewBoxes'])) {
+            $data['viewBoxes'] = $decoded['viewBoxes'];
+        }
 
-        $cache[$libraryId] = $icons;
+        self::$cache[$libraryId] = $data;
 
-        return $cache[$libraryId];
+        return $data;
     }
 
     public static function refreshEnabled(): void
@@ -165,8 +231,8 @@ final class CdnCatalog
         }
 
         $existing = self::version($libraryId);
-        if ($existing === $resolved && self::icons($libraryId) !== []) {
-            return ['ok' => true, 'message' => 'Catalog already up to date.', 'version' => $resolved, 'count' => \count(self::icons($libraryId))];
+        if ($existing === $resolved && self::count($libraryId) > 0) {
+            return ['ok' => true, 'message' => 'Catalog already up to date.', 'version' => $resolved, 'count' => self::count($libraryId)];
         }
 
         $tarball = self::npmTarball($package, $resolved);
@@ -174,8 +240,8 @@ final class CdnCatalog
             return ['ok' => false, 'message' => sprintf('Could not find tarball for %s@%s.', $package, $resolved)];
         }
 
-        $parsed = self::downloadAndParse($libraryId, $tarball);
-        if ($parsed === null || $parsed === []) {
+        $parsed = self::downloadAndParse($library, $tarball);
+        if ($parsed === null || $parsed['variants'] === []) {
             return ['ok' => false, 'message' => 'Could not parse icon SVGs from the CDN package.'];
         }
 
@@ -184,14 +250,24 @@ final class CdnCatalog
             return ['ok' => false, 'message' => 'Could not create the local CDN cache directory.'];
         }
 
-        $file = $dir . '/' . sanitize_file_name($libraryId) . '.json';
-        $payload = wp_json_encode([
-            'version' => $resolved,
-            'package' => $package,
-            'icons' => $parsed,
-        ]);
+        $count = 0;
+        foreach ($parsed['variants'] as $icons) {
+            $count = max($count, \count($icons));
+        }
 
-        if (!\is_string($payload) || file_put_contents($file, $payload) === false) {
+        $file = $dir . '/' . sanitize_file_name($libraryId) . '.json';
+        $payload = $library->variants() === [] && isset($parsed['variants'][''])
+            ? ['version' => $resolved, 'package' => $package, 'icons' => $parsed['variants']['']]
+            : ['version' => $resolved, 'package' => $package, 'variants' => $parsed['variants']];
+        if ($parsed['meta'] !== []) {
+            $payload['meta'] = $parsed['meta'];
+        }
+        if ($parsed['viewBoxes'] !== []) {
+            $payload['viewBoxes'] = $parsed['viewBoxes'];
+        }
+        $json = wp_json_encode($payload);
+
+        if (!\is_string($json) || file_put_contents($file, $json) === false) {
             return ['ok' => false, 'message' => 'Could not write the CDN catalog cache.'];
         }
 
@@ -199,16 +275,17 @@ final class CdnCatalog
         $meta[$libraryId] = [
             'version' => $resolved,
             'fetched_at' => time(),
-            'count' => \count($parsed),
+            'count' => $count,
             'file' => $file,
         ];
         update_option(self::META_OPTION, $meta, false);
+        unset(self::$cache[$libraryId]);
 
         return [
             'ok' => true,
             'message' => 'CDN catalog updated.',
             'version' => $resolved,
-            'count' => \count($parsed),
+            'count' => $count,
         ];
     }
 
@@ -247,7 +324,11 @@ final class CdnCatalog
             $url = 'https://registry.npmjs.org/' . str_replace('/', '%2f', $package);
         }
 
-        $response = wp_remote_get($url, ['timeout' => 10]);
+        // Abbreviated metadata: much smaller than the full packument for packages with many releases.
+        $response = wp_remote_get($url, [
+            'timeout' => 10,
+            'headers' => ['Accept' => 'application/vnd.npm.install-v1+json'],
+        ]);
         if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
             return [];
         }
@@ -306,9 +387,9 @@ final class CdnCatalog
     }
 
     /**
-     * @return array<string, string>|null
+     * @return array{variants: array<string, array<string, string>>, meta: array<string, array<string, string>>, viewBoxes: array<string, array<string, string>>}|null
      */
-    private static function downloadAndParse(string $libraryId, string $tarballUrl): ?array
+    private static function downloadAndParse(LibraryInterface $library, string $tarballUrl): ?array
     {
         if (!class_exists(\PharData::class)) {
             return null;
@@ -341,6 +422,7 @@ final class CdnCatalog
         }
 
         wp_delete_file($tmp);
+        $libraryId = $library->id();
 
         try {
             $phar = new \PharData($gz);
@@ -354,7 +436,25 @@ final class CdnCatalog
             }
 
             $tar = new \PharData($tarPath);
-            $icons = [];
+
+            // Simple Icons: brand data and per-logo licenses come from data/simple-icons.json.
+            $brandData = null;
+            if ($libraryId === 'simple-icons') {
+                $brandData = [];
+                $dataFile = 'phar://' . str_replace('\\', '/', $tarPath) . '/package/data/simple-icons.json';
+                $decoded = is_file($dataFile) ? json_decode((string) file_get_contents($dataFile), true) : null;
+                $entries = \is_array($decoded) ? ($decoded['icons'] ?? $decoded) : [];
+                foreach ((array) $entries as $entry) {
+                    if (\is_array($entry) && isset($entry['slug']) && \is_string($entry['slug'])) {
+                        $brandData[$entry['slug']] = $entry;
+                    }
+                }
+            }
+
+            $variants = [];
+            $priorities = [];
+            $viewBoxes = [];
+            $meta = [];
 
             foreach (new \RecursiveIteratorIterator($tar) as $file) {
                 if (!$file instanceof \SplFileInfo || !$file->isFile()) {
@@ -366,9 +466,27 @@ final class CdnCatalog
                     continue;
                 }
 
-                $name = self::iconNameFromPackagePath($libraryId, $path);
-                if ($name === null) {
+                $entry = $library->packageEntry($path);
+                if ($entry === null) {
                     continue;
+                }
+                [$variant, $name] = $entry;
+                $priority = (int) ($entry[2] ?? 0);
+
+                if ($name === '' || Exclusions::isExcluded($libraryId, $name)) {
+                    continue;
+                }
+                if (isset($priorities[$variant][$name]) && $priorities[$variant][$name] >= $priority) {
+                    continue;
+                }
+
+                $item = null;
+                if ($brandData !== null) {
+                    $item = $brandData[$name] ?? null;
+                    $licenseType = \is_array($item) && isset($item['license']['type']) ? (string) $item['license']['type'] : '';
+                    if (!\is_array($item) || Exclusions::isExcluded($libraryId, $name, $licenseType)) {
+                        continue;
+                    }
                 }
 
                 $svg = file_get_contents($file->getPathname());
@@ -381,7 +499,26 @@ final class CdnCatalog
                     continue;
                 }
 
-                $icons[$name] = $inner;
+                $variants[$variant][$name] = $inner;
+                $priorities[$variant][$name] = $priority;
+
+                if ($library instanceof PackageLibrary && preg_match('/<svg\b[^>]*\bviewBox="([^"]+)"/i', $svg, $vb) === 1) {
+                    $viewBox = trim($vb[1]);
+                    if ($viewBox !== $library->viewBox('', $variant)) {
+                        $viewBoxes[$variant][$name] = $viewBox;
+                    } else {
+                        unset($viewBoxes[$variant][$name]);
+                    }
+                }
+
+                if (\is_array($item)) {
+                    $meta[$name] = array_filter([
+                        'title' => isset($item['title']) ? (string) $item['title'] : '',
+                        'hex' => isset($item['hex']) ? strtoupper((string) $item['hex']) : '',
+                        'guidelines' => isset($item['guidelines']) && \is_string($item['guidelines']) && preg_match('#^https?://#', $item['guidelines']) ? $item['guidelines'] : '',
+                        'license' => isset($item['license']['type']) && $item['license']['type'] !== 'CC0-1.0' ? (string) $item['license']['type'] : '',
+                    ]);
+                }
             }
 
             if (is_file($tarPath) && $tarPath !== $gz) {
@@ -389,7 +526,12 @@ final class CdnCatalog
             }
             wp_delete_file($gz);
 
-            return $icons;
+            foreach ($variants as $variant => $icons) {
+                ksort($icons, SORT_STRING);
+                $variants[$variant] = $icons;
+            }
+
+            return ['variants' => $variants, 'meta' => $meta, 'viewBoxes' => $viewBoxes];
         } catch (\Throwable $e) {
             if (isset($gz) && is_file($gz)) {
                 wp_delete_file($gz);
@@ -399,35 +541,15 @@ final class CdnCatalog
         }
     }
 
-    private static function iconNameFromPackagePath(string $libraryId, string $path): ?string
-    {
-        $normalized = str_replace('\\', '/', $path);
-        $file = basename($normalized, '.svg');
-        if ($file === '') {
-            return null;
-        }
-
-        if ($libraryId === 'material-symbols') {
-            if (!str_contains($normalized, '/outlined/')) {
-                return null;
-            }
-
-            return $file;
-        }
-
-        if (!str_contains($normalized, '/icons/')) {
-            return null;
-        }
-
-        return $file;
-    }
-
     private static function innerSvg(string $svg): string
     {
         $svg = preg_replace('/<\?xml[^>]*>/i', '', $svg) ?? $svg;
         $svg = preg_replace('/<!DOCTYPE[^>]*>/i', '', $svg) ?? $svg;
         $svg = preg_replace('/<svg\b[^>]*>/i', '', $svg) ?? $svg;
         $svg = preg_replace('/<\/svg>\s*$/i', '', $svg) ?? $svg;
+        // Our own <title> is added when rendering; Tabler's invisible 24x24 bounding path is dropped.
+        $svg = preg_replace('/<title>.*?<\/title>/is', '', $svg) ?? $svg;
+        $svg = preg_replace('/<path stroke="none" d="M0 0h24v24H0z" fill="none"\s*\/>/i', '', $svg) ?? $svg;
 
         return trim(preg_replace('/\s+/', ' ', $svg) ?? $svg);
     }

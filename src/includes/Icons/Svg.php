@@ -79,6 +79,63 @@ final class Svg
 SVG;
     }
 
+    /**
+     * Wraps an icon from one of the npm-packaged libraries (see Package\PackageLibrary).
+     * Paint comes from currentColor; an explicit color is set with the CSS color property so it also
+     * reaches child elements that use currentColor themselves (Ionicons outlines, Phosphor duotone).
+     *
+     * @param string      $paint    "stroke" (outline styles) or "fill".
+     * @param string|null $brandHex Official brand color (Simple Icons), used when the color is "brand".
+     */
+    public static function package(
+        string $inner,
+        IconOptions $options,
+        string $libraryId,
+        string $variant,
+        string $viewBox,
+        string $paint,
+        ?string $brandHex = null
+    ): string {
+        $hidden = Common::hidden($options->hiddenOrTitle);
+        $title = Common::title($options->hiddenOrTitle);
+        $width = (int) $options->size;
+        $height = (int) $options->height;
+
+        if (strcasecmp(trim($options->color), 'brand') === 0) {
+            $color = $brandHex !== null && preg_match('/^[0-9a-f]{6}$/i', $brandHex) === 1
+                ? '#' . strtolower($brandHex)
+                : 'currentColor';
+        } else {
+            $color = self::color($options->color);
+        }
+
+        $id = self::classAttr($libraryId);
+        $name = self::classAttr($options->name);
+        $classes = ['wpicons', 'wpicons--' . $id];
+        if ($variant !== '') {
+            $classes[] = 'wpicons--' . $id . '-' . self::classAttr($variant);
+        }
+        $classes[] = 'wpicons-' . $id . '-' . $name;
+        $class_attr = esc_attr(trim(implode(' ', $classes) . ' ' . self::classAttr($options->class)));
+
+        if (preg_match('/^-?\d+(?:\.\d+)?(?:[ ,]+-?\d+(?:\.\d+)?){3}$/', trim($viewBox)) !== 1) {
+            $viewBox = '0 0 24 24';
+        }
+        $view_box = esc_attr(trim($viewBox));
+
+        $paint_attr = $paint === 'stroke'
+            ? 'fill="none" stroke="currentColor" stroke-width="' . esc_attr((string) $options->strokeWidth) . '" stroke-linecap="round" stroke-linejoin="round"'
+            : 'fill="currentColor"';
+        $style_attr = $color === 'currentColor' ? '' : ' style="' . esc_attr('color:' . $color) . '"';
+        $inner = self::sanitizeInner($inner);
+
+        return <<<SVG
+<svg {$hidden} xmlns="http://www.w3.org/2000/svg" width="{$width}" height="{$height}" viewBox="{$view_box}" {$paint_attr} class="{$class_attr}"{$style_attr}>
+{$title}{$inner}
+</svg>
+SVG;
+    }
+
     public static function material(string $inner, IconOptions $options): string
     {
         $hidden = Common::hidden($options->hiddenOrTitle);

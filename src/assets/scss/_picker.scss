@@ -311,7 +311,11 @@
                 }
 
                 &.is-selected {
+                    // Primary tint + 2px primary ring instead of the dark-grey secondary fill, so the
+                    // selection stays obvious and dark brand icons stay readable.
                     border-color: themes.getCSSVar(primary) !important;
+                    background: color-mix(in srgb, #{themes.getCSSVar(primary)} 14%, transparent) !important;
+                    box-shadow: inset 0 0 0 1px themes.getCSSVar(primary);
                 }
             }
 

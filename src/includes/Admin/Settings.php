@@ -2,6 +2,7 @@
 
 namespace WPIcons\Admin;
 
+use WPIcons\Icons\CatalogStore;
 use WPIcons\Icons\Cdn\CdnCatalog;
 use WPIcons\Icons\Registry;
 use WPIcons\Template\Template;
@@ -105,6 +106,94 @@ class Settings
     /**
      * @param array<string, mixed> $settings
      */
+    public static function libraryVariant(array $settings, string $libraryId): string
+    {
+        $library = Registry::get($libraryId);
+        if ($library === null) {
+            return '';
+        }
+
+        $variant = $settings['libraries'][$libraryId]['variant'] ?? '';
+
+        return \is_string($variant) && isset($library->variants()[$variant]) ? $variant : $library->defaultVariant();
+    }
+
+    /**
+     * Default stroke width for new icons from a library. Lucide keeps using the global default_stroke.
+     *
+     * @param array<string, mixed> $settings
+     */
+    public static function libraryStroke(array $settings, string $libraryId): float
+    {
+        $stored = $settings['libraries'][$libraryId]['stroke'] ?? '';
+        if ($stored !== '' && is_numeric($stored)) {
+            return max(0.25, min(4, (float) $stored));
+        }
+
+        if ($libraryId === 'lucide') {
+            return (float) $settings['default_stroke'];
+        }
+
+        return Registry::get($libraryId)?->defaultStroke() ?? (float) $settings['default_stroke'];
+    }
+
+    /**
+     * "brand" (Simple Icons' official colors), "current" (inherit) or "custom".
+     *
+     * @param array<string, mixed> $settings
+     */
+    public static function libraryColorMode(array $settings, string $libraryId): string
+    {
+        $library = Registry::get($libraryId);
+        $mode = $settings['libraries'][$libraryId]['color_mode'] ?? '';
+        $allowed = $library !== null && $library->hasBrandColors() ? ['brand', 'current', 'custom'] : ['current', 'custom'];
+        if (\is_string($mode) && \in_array($mode, $allowed, true)) {
+            return $mode;
+        }
+
+        return $library !== null && $library->hasBrandColors() ? 'brand' : '';
+    }
+
+    /**
+     * Default color for new icons from a library: its own override, else the global default color.
+     *
+     * @param array<string, mixed> $settings
+     */
+    public static function libraryColor(array $settings, string $libraryId): string
+    {
+        $mode = self::libraryColorMode($settings, $libraryId);
+        if ($mode === 'brand') {
+            return 'brand';
+        }
+        if ($mode === 'current') {
+            return 'currentColor';
+        }
+        if ($mode === 'custom') {
+            $color = $settings['libraries'][$libraryId]['color'] ?? '';
+            if (\is_string($color) && $color !== '') {
+                return $color;
+            }
+        }
+
+        return (string) $settings['default_color'];
+    }
+
+    public static function sanitizeColor(string $color): string
+    {
+        $color = trim($color);
+        if ($color === '' || strcasecmp($color, 'currentColor') === 0) {
+            return 'currentColor';
+        }
+        if (preg_match('/^#(?:[0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i', $color) === 1) {
+            return strtolower($color);
+        }
+        if (preg_match('/^var\(--[a-zA-Z0-9_-]+\)$/', $color) === 1) {
+            return $color;
+        }
+
+        return '';
+    }
+
     public static function libraryCdnVersion(array $settings, string $libraryId): string
     {
         $version = $settings['libraries'][$libraryId]['cdn_version'] ?? 'latest';
@@ -152,10 +241,35 @@ class Settings
                 $version = $current['libraries'][$id]['cdn_version'] ?? 'latest';
             }
 
+            $library = Registry::get($id);
+            $previous = $current['libraries'][$id] ?? [];
+
+            $variant = isset($posted['variant']) ? sanitize_key((string) $posted['variant']) : (string) ($previous['variant'] ?? '');
+            if ($library === null || !isset($library->variants()[$variant])) {
+                $variant = '';
+            }
+
+            $libraryStroke = $previous['stroke'] ?? '';
+            if (isset($posted['stroke']) && is_numeric($posted['stroke'])) {
+                $libraryStroke = (string) max(0.25, min(4, round((float) $posted['stroke'], 2)));
+            }
+
+            $colorMode = isset($posted['color_mode']) ? sanitize_key((string) $posted['color_mode']) : (string) ($previous['color_mode'] ?? '');
+            $modes = $library !== null && $library->hasBrandColors() ? ['brand', 'current', 'custom'] : ['current', 'custom'];
+            if (!\in_array($colorMode, $modes, true)) {
+                $colorMode = '';
+            }
+
+            $libraryColor = isset($posted['color']) ? self::sanitizeColor((string) $posted['color']) : (string) ($previous['color'] ?? '');
+
             $libraries[$id] = [
                 'enabled' => !empty($posted['enabled']),
                 'source' => $source,
                 'cdn_version' => $version,
+                'variant' => $variant,
+                'stroke' => $libraryStroke,
+                'color_mode' => $colorMode,
+                'color' => $libraryColor,
             ];
         }
 
@@ -180,10 +294,16 @@ class Settings
         $stroke = isset($input['default_stroke']) && is_numeric($input['default_stroke'])
             ? (float) $input['default_stroke']
             : $current['default_stroke'];
+        // The Lucide row's "Default stroke width" is the global default stroke (kept in sync).
+        if (isset($input['libraries']['lucide']['stroke']) && is_numeric($input['libraries']['lucide']['stroke'])) {
+            $stroke = (float) $input['libraries']['lucide']['stroke'];
+        }
+        $libraries['lucide']['stroke'] = '';
         $color = isset($input['default_color']) ? trim((string) $input['default_color']) : $current['default_color'];
         if ($color === '') {
             $color = 'currentColor';
         }
+
 
         return [
             'default_library' => $defaultLibrary,
@@ -240,24 +360,47 @@ class Settings
             return;
         }
 
+        $view = isset($_GET['view']) ? sanitize_key(wp_unslash($_GET['view'])) : '';
+        if ($view === 'licenses') {
+            echo $this->templates->render('admin/licenses', [
+                'licenses' => self::licenseFiles(),
+                'back_url' => admin_url('admin.php?page=' . self::PAGE),
+            ]);
+
+            return;
+        }
+
         $settings = self::get();
         $libraries = [];
         $cdnFetchPending = (bool) wp_next_scheduled(CdnCatalog::CRON_HOOK);
 
         foreach (Registry::all() as $id => $library) {
+            $variant = self::libraryVariant($settings, $id);
             $libraries[] = [
                 'id' => $id,
                 'label' => $library->label(),
+                'glyph' => Registry::glyph($id, 20),
                 'package' => $library->npmPackage(),
                 'bundled_version' => $library->bundledVersion(),
+                'count' => CatalogStore::count($id, $variant),
                 'cdn_version' => self::libraryCdnVersion($settings, $id),
                 'source' => self::librarySource($settings, $id),
                 'enabled' => self::libraryEnabled($settings, $id),
                 'cdn_versions' => CdnCatalog::npmVersions($library->npmPackage()),
                 'cached_version' => CdnCatalog::version($id),
                 'cached_at' => CdnCatalog::fetchedAt($id),
-                'cached_count' => \count(CdnCatalog::icons($id)),
+                'cached_count' => CdnCatalog::count($id),
                 'fetching' => $cdnFetchPending && self::libraryEnabled($settings, $id) && self::librarySource($settings, $id) === 'cdn',
+                'variants' => $library->variants(),
+                'variant_param' => $library->variantParam(),
+                'variant' => $variant,
+                'stored_variant' => (string) ($settings['libraries'][$id]['variant'] ?? ''),
+                'has_stroke' => \in_array('stroke', $library->supports(), true),
+                'stroke' => self::libraryStroke($settings, $id),
+                'brand_colors' => $library->hasBrandColors(),
+                'has_brands' => $library->hasBrands(),
+                'color_mode' => self::libraryColorMode($settings, $id),
+                'color' => (string) ($settings['libraries'][$id]['color'] ?? ''),
             ];
         }
 
@@ -266,7 +409,45 @@ class Settings
             'option_name' => self::OPTION,
             'group' => self::GROUP,
             'libraries' => $libraries,
+            'licenses_url' => self::licensesUrl(),
         ]);
+    }
+
+    public static function licensesUrl(): string
+    {
+        return admin_url('admin.php?page=' . self::PAGE . '&view=licenses');
+    }
+
+    /**
+     * License texts shipped in licenses/ (plain text, shown escaped).
+     *
+     * @return list<array{file: string, title: string, text: string}>
+     */
+    private static function licenseFiles(): array
+    {
+        $dir = WP_ICONS__PATH . 'licenses/';
+        $files = glob($dir . '*.{txt,md}', GLOB_BRACE) ?: [];
+        $order = ['README.md', 'lucide.txt', 'material-symbols.txt', 'phosphor.txt', 'simple-icons.txt', 'simple-icons-disclaimer.txt', 'simple-icons-icon-licenses.md', 'tabler.txt', 'heroicons.txt', 'ionicons.txt', 'octicons.txt'];
+        usort($files, static function (string $a, string $b) use ($order): int {
+            $ia = array_search(basename($a), $order, true);
+            $ib = array_search(basename($b), $order, true);
+
+            return ($ia === false ? 99 : $ia) <=> ($ib === false ? 99 : $ib) ?: strcmp($a, $b);
+        });
+
+        $licenses = [];
+        foreach ($files as $file) {
+            if (!is_readable($file)) {
+                continue;
+            }
+            $licenses[] = [
+                'file' => basename($file),
+                'title' => basename($file),
+                'text' => (string) file_get_contents($file),
+            ];
+        }
+
+        return $licenses;
     }
 
     /**
@@ -286,6 +467,10 @@ class Settings
                 'enabled' => true,
                 'source' => 'plugin',
                 'cdn_version' => 'latest',
+                'variant' => '',
+                'stroke' => '',
+                'color_mode' => '',
+                'color' => '',
             ];
         }
 

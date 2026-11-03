@@ -1,6 +1,6 @@
 # WP Icons
 
-A WordPress plugin for placing icons from [Lucide](https://lucide.dev/) and [Material Symbols](https://fonts.google.com/icons) (Outlined), with room to add more libraries later. Icons render as inline SVG. See [Icon libraries](#icon-libraries) for what is bundled today and what is planned.
+A WordPress plugin for placing icons from eight open-source icon libraries, including [Lucide](https://lucide.dev/), [Material Symbols](https://fonts.google.com/icons) (Outlined), Phosphor, Tabler Icons, and Simple Icons. Icons render as inline SVG. See [Icon libraries](#icon-libraries) for the full list, versions, and licenses.
 
 The plugin is **WP Icons**. The repository and plugin folder are `wp-lucide-icons`.
 
@@ -22,18 +22,20 @@ In Flatsome UX Builder iframes, the plugin loads a small script so inline icons 
 
 ## Icon libraries
 
-Two libraries ship with the plugin today. The others are planned and are not in the plugin yet; the list may change before they are released.
+All eight libraries ship with the plugin. Each catalog is generated from a pinned npm package version (below); the optional CDN source can download a newer version later. Catalogs load per library, only when a library is opened in the picker or used on a page.
 
-| Library                                                       | Status  | Library id         | npm package                 | License                                                                                                                                                                    |
-| ------------------------------------------------------------- | ------- | ------------------ | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Lucide](https://lucide.dev/)                                 | Bundled | `lucide`           | `lucide-static`             | [ISC](https://github.com/lucide-icons/lucide/blob/main/LICENSE). Icons derived from Feather are MIT.                                                                       |
-| [Material Symbols](https://fonts.google.com/icons) (Outlined) | Bundled | `material-symbols` | `@material-symbols/svg-400` | [Apache-2.0](https://github.com/google/material-design-icons/blob/master/LICENSE)                                                                                          |
-| Simple Icons                                                  | Planned |                    |                             | [CC0-1.0](https://github.com/simple-icons/simple-icons/blob/develop/LICENSE.md) for the project. Brand logos are trademarks of their owners; some icons carry other terms. |
-| Phosphor                                                      | Planned |                    |                             | [MIT](https://github.com/phosphor-icons/core/blob/main/LICENSE)                                                                                                            |
-| Tabler Icons                                                  | Planned |                    |                             | [MIT](https://github.com/tabler/tabler-icons/blob/main/LICENSE)                                                                                                            |
-| Heroicons                                                     | Planned |                    |                             | [MIT](https://github.com/tailwindlabs/heroicons/blob/master/LICENSE)                                                                                                       |
-| Ionicons                                                      | Planned |                    |                             | [MIT](https://github.com/ionic-team/ionicons/blob/main/LICENSE)                                                                                                            |
-| Octicons                                                      | Planned |                    |                             | [MIT](https://github.com/primer/octicons/blob/main/LICENSE). GitHub logos follow GitHub's [logo guidelines](https://github.com/logos).                                     |
+| Library                                                       | Status  | Library id         | npm package                 | Version | License                                                                                                                                                                    |
+| ------------------------------------------------------------- | ------- | ------------------ | --------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Lucide](https://lucide.dev/)                                 | Bundled | `lucide`           | `lucide-static`             | 1.61.0  | [ISC](https://github.com/lucide-icons/lucide/blob/main/LICENSE). Icons derived from Feather are MIT.                                                                       |
+| [Material Symbols](https://fonts.google.com/icons) (Outlined) | Bundled | `material-symbols` | `@material-symbols/svg-400` | 0.48.1  | [Apache-2.0](https://github.com/google/material-design-icons/blob/master/LICENSE)                                                                                          |
+| [Simple Icons](https://simpleicons.org/)                      | Bundled | `simple-icons`     | `simple-icons`              | 16.36.0 | [CC0-1.0](https://github.com/simple-icons/simple-icons/blob/develop/LICENSE.md) for the project. Brand logos are trademarks of their owners; some icons carry other terms. |
+| [Phosphor](https://phosphoricons.com/)                        | Bundled | `phosphor`         | `@phosphor-icons/core`      | 2.1.1   | [MIT](https://github.com/phosphor-icons/core/blob/main/LICENSE)                                                                                                            |
+| [Tabler Icons](https://tabler.io/icons)                       | Bundled | `tabler`           | `@tabler/icons`             | 3.50.0  | [MIT](https://github.com/tabler/tabler-icons/blob/main/LICENSE)                                                                                                            |
+| [Heroicons](https://heroicons.com/)                           | Bundled | `heroicons`        | `heroicons`                 | 2.2.0   | [MIT](https://github.com/tailwindlabs/heroicons/blob/master/LICENSE)                                                                                                       |
+| [Ionicons](https://ionic.io/ionicons)                         | Bundled | `ionicons`         | `ionicons`                  | 8.1.0   | [MIT](https://github.com/ionic-team/ionicons/blob/main/LICENSE)                                                                                                            |
+| [Octicons](https://primer.style/octicons/)                    | Bundled | `octicons`         | `@primer/octicons`          | 19.42.0 | [MIT](https://github.com/primer/octicons/blob/main/LICENSE). GitHub logos follow GitHub's [logo guidelines](https://github.com/logos).                                     |
+
+Some icons are left out on purpose. Simple Icons whose own license is non-commercial, no-derivatives, AGPL, GPL-only, or custom are excluded, and so are the GitHub and Copilot logos in Octicons. The rules are in `config/icon-exclusions.json` (see `config/README.md`), and the license texts ship in `licenses/` and on **WP Icons → Settings → View licenses**.
 
 Each icon set is a third-party work under its own license. See [Trademarks & usage responsibility](#trademarks--usage-responsibility) before using brand icons.
 
@@ -72,7 +74,7 @@ Then activate the plugin from that directory. See [Development](#development) fo
 
 ### Block editor
 
-Insert the **Icon** block. Choose a library, pick an icon, then set size, color, and (for Lucide) stroke width.
+Insert the **Icon** block. Choose a library (or search all of them at once), pick an icon, then set size and color. Libraries with styles show a Weight or Style control, stroke-based styles show a stroke width, and Simple Icons can use each brand's own color.
 
 To place an icon inside a paragraph, heading, or other text, use the **Insert icon** control on the block toolbar. Inline icons follow the surrounding text size and color.
 
@@ -89,11 +91,13 @@ Use the star **Insert icon** button on the TinyMCE toolbar. The same control app
 
 | Attribute | Default                               | Notes                                                                |
 | --------- | ------------------------------------- | -------------------------------------------------------------------- |
-| `library` | Settings → default library (`lucide`) | `lucide` or `material-symbols`                                       |
+| `library` | Settings → default library (`lucide`) | Any library id from [Icon libraries](#icon-libraries)                |
 | `name`    | `circle`                              | Icon name in that library                                            |
 | `size`    | Settings (24)                         |                                                                      |
-| `color`   | Settings (`currentColor`)             | CSS color                                                            |
-| `stroke`  | Settings (2)                          | Lucide only                                                          |
+| `color`   | Settings, per library                 | CSS color, or `brand` for the Simple Icons brand color               |
+| `stroke`  | Settings, per library (2)             | Stroke-based styles only (Lucide, Tabler outline, Heroicons outline) |
+| `weight`  | Settings, per library                 | Phosphor: `thin`, `light`, `regular`, `bold`, `fill`, `duotone`     |
+| `style`   | Settings, per library                 | Tabler, Heroicons, and Ionicons styles, as shown on the Library page |
 | `width`   | empty                                 | Legacy alias for `stroke` when `stroke` is omitted                   |
 | `class`   | empty                                 | Extra class on the SVG                                               |
 | `title`   | empty                                 | Accessible title. Empty means the icon is hidden from assistive tech |
@@ -146,6 +150,7 @@ While editing, `pnpm start` rebuilds the JavaScript bundles, and `pnpm sass` wat
 | `pnpm sync-icons`          | Download Lucide and Material Symbols and rewrite the generated PHP maps.                         |
 | `pnpm sync-icons:lucide`   | Lucide only (`lucide-static`).                                                                   |
 | `pnpm sync-icons:material` | Material Symbols Outlined only (`@material-symbols/svg-400`).                                    |
+| `pnpm sync-icons:packages` | The six npm-package libraries, at the versions pinned in `package.json`, with the exclusions.     |
 | `pnpm publish`             | Zip a release with `node publish.js wp-lucide-icons.php`. This is not `npm publish`.             |
 
 Pass a version after `--` to pin a catalog. Without one, the script uses `latest`:
@@ -221,7 +226,7 @@ echo (new Renderer())->fromAttributes([
 ]);
 ```
 
-Library ids are `lucide` (size, color, stroke) and `material-symbols` (size, color). An unknown name or a disabled library returns an empty string.
+Use any library id from [Icon libraries](#icon-libraries). `stroke` applies to stroke-based styles, `weight` to Phosphor, and `style` to Tabler, Heroicons, and Ionicons. An unknown name or a disabled library returns an empty string.
 
 ## Trademarks & usage responsibility
 

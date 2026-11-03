@@ -2,8 +2,8 @@
 
 namespace WPIcons\Icons\Lucide;
 
+use WPIcons\Icons\BaseLibrary;
 use WPIcons\Icons\IconOptions;
-use WPIcons\Icons\LibraryInterface;
 use WPIcons\Icons\LucideIcon;
 use WPIcons\Icons\Svg;
 
@@ -11,7 +11,7 @@ if (!\defined('ABSPATH')) {
     exit;
 }
 
-final class LucideLibrary implements LibraryInterface
+final class LucideLibrary extends BaseLibrary
 {
     public function id(): string
     {
@@ -38,7 +38,7 @@ final class LucideLibrary implements LibraryInterface
         return ['size', 'color', 'stroke'];
     }
 
-    public function bundledNames(): array
+    public function bundledNames(string $variant = ''): array
     {
         return array_values(array_map(
             static fn (LucideIcon $icon): string => $icon->value,
@@ -46,7 +46,7 @@ final class LucideLibrary implements LibraryInterface
         ));
     }
 
-    public function bundledInner(string $name): ?string
+    public function bundledInner(string $name, string $variant = ''): ?string
     {
         $icon = LucideIcon::fromName($name);
 
@@ -56,5 +56,10 @@ final class LucideLibrary implements LibraryInterface
     public function wrap(string $inner, IconOptions $options): string
     {
         return Svg::lucide($inner, $options);
+    }
+
+    public function glyph(): array
+    {
+        return ['feather', ''];
     }
 }

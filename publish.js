@@ -56,6 +56,8 @@ fs.readFile(path.join(__dirname, process.argv[2]), "utf8", (err, data) => {
         "src/templates",
         "build",
         "vendor",
+        "config",
+        "licenses",
     ];
     foldersToZip.forEach((folder) => {
         archive.directory(`${folder}/`, `${root}${folder}`);

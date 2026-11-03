@@ -5,8 +5,8 @@
     "title": "Icon",
     "category": "wpicons",
     "icon": "star-filled",
-    "description": "Insert an icon from Lucide Icons or Material Symbols.",
-    "keywords": ["icon", "lucide", "material", "svg"],
+    "description": "Insert an icon from Lucide, Material Symbols, Phosphor, Simple Icons, Tabler, Heroicons, Ionicons or Octicons.",
+    "keywords": ["icon", "lucide", "material", "phosphor", "tabler", "svg"],
     "textdomain": "wpicons",
     "attributes": {
         "library": {
@@ -30,6 +30,10 @@
             "default": 2
         },
         "title": {
+            "type": "string",
+            "default": ""
+        },
+        "variant": {
             "type": "string",
             "default": ""
         }
