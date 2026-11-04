@@ -23,6 +23,8 @@ final class CdnCatalog
     public const CRON_HOOK = 'wp_icons_refresh_cdn_catalogs';
     public const META_OPTION = 'wp_icons__cdn_meta';
 
+    private const FETCHING_TRANSIENT = 'wp_icons_cdn_fetching';
+
     /** @var array<string, array{variants: array<string, array<string, string>>, meta: array<string, array<string, string>>, viewBoxes: array<string, array<string, string>>}> */
     private static array $cache = [];
 
@@ -45,6 +47,65 @@ final class CdnCatalog
         if ($timestamp) {
             wp_unschedule_event($timestamp, self::CRON_HOOK);
         }
+        delete_transient(self::FETCHING_TRANSIENT);
+    }
+
+    /**
+     * Queue a near-term refresh for every enabled CDN library.
+     * The daily event stays on the same hook and does not count as waiting.
+     */
+    public static function queueRefresh(): void
+    {
+        $settings = Settings::get();
+        $ids = [];
+        foreach (array_keys(Registry::all()) as $id) {
+            if (!Settings::libraryEnabled($settings, $id) || Settings::librarySource($settings, $id) !== 'cdn') {
+                continue;
+            }
+            $ids[] = $id;
+        }
+
+        if ($ids === []) {
+            delete_transient(self::FETCHING_TRANSIENT);
+            return;
+        }
+
+        set_transient(self::FETCHING_TRANSIENT, $ids, 15 * MINUTE_IN_SECONDS);
+        if (!self::singleEventWaiting()) {
+            wp_schedule_single_event(time() + 5, self::CRON_HOOK);
+        }
+    }
+
+    public static function isFetching(string $libraryId): bool
+    {
+        $pending = get_transient(self::FETCHING_TRANSIENT);
+
+        return \is_array($pending) && \in_array($libraryId, $pending, true);
+    }
+
+    private static function singleEventWaiting(): bool
+    {
+        if (!\function_exists('_get_cron_array')) {
+            return false;
+        }
+
+        $crons = _get_cron_array();
+        if (!\is_array($crons)) {
+            return false;
+        }
+
+        foreach ($crons as $hooks) {
+            if (!isset($hooks[self::CRON_HOOK]) || !\is_array($hooks[self::CRON_HOOK])) {
+                continue;
+            }
+            foreach ($hooks[self::CRON_HOOK] as $event) {
+                if (\is_array($event) && empty($event['schedule'])) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -172,10 +233,12 @@ final class CdnCatalog
         }
 
         $data = $empty;
-        // Single-style libraries (Lucide, Material Symbols) keep the original flat "icons" format.
+        // Older Lucide and Material Symbols caches stored a flat "icons" map. Those libraries now
+        // use their default style, so a legacy cache is read as that style and does not re-download.
+        $legacyVariant = Registry::get($libraryId)?->defaultVariant() ?? '';
         $variants = isset($decoded['variants']) && \is_array($decoded['variants'])
             ? $decoded['variants']
-            : ['' => $decoded['icons'] ?? []];
+            : [$legacyVariant => $decoded['icons'] ?? []];
         foreach ($variants as $variant => $icons) {
             if (!\is_string($variant) && !\is_int($variant)) {
                 continue;
@@ -200,17 +263,21 @@ final class CdnCatalog
 
     public static function refreshEnabled(): void
     {
-        $settings = Settings::get();
+        try {
+            $settings = Settings::get();
 
-        foreach (array_keys(Registry::all()) as $libraryId) {
-            if (!Settings::libraryEnabled($settings, $libraryId)) {
-                continue;
-            }
-            if (Settings::librarySource($settings, $libraryId) !== 'cdn') {
-                continue;
-            }
+            foreach (array_keys(Registry::all()) as $libraryId) {
+                if (!Settings::libraryEnabled($settings, $libraryId)) {
+                    continue;
+                }
+                if (Settings::librarySource($settings, $libraryId) !== 'cdn') {
+                    continue;
+                }
 
-            self::refresh($libraryId, Settings::libraryCdnVersion($settings, $libraryId));
+                self::refresh($libraryId, Settings::libraryCdnVersion($settings, $libraryId));
+            }
+        } finally {
+            delete_transient(self::FETCHING_TRANSIENT);
         }
     }
 

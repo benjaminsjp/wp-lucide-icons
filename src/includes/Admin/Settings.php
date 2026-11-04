@@ -328,17 +328,7 @@ class Settings
             return;
         }
 
-        $needsRefresh = false;
-        foreach (array_keys(Registry::all()) as $id) {
-            if (self::libraryEnabled($new, $id) && self::librarySource($new, $id) === 'cdn') {
-                $needsRefresh = true;
-                break;
-            }
-        }
-
-        if ($needsRefresh && !wp_next_scheduled(CdnCatalog::CRON_HOOK)) {
-            wp_schedule_single_event(time() + 5, CdnCatalog::CRON_HOOK);
-        }
+        CdnCatalog::queueRefresh();
     }
 
     /**
@@ -376,7 +366,6 @@ class Settings
 
         $settings = self::get();
         $libraries = [];
-        $cdnFetchPending = (bool) wp_next_scheduled(CdnCatalog::CRON_HOOK);
 
         foreach (Registry::all() as $id => $library) {
             $variant = self::libraryVariant($settings, $id);
@@ -394,7 +383,7 @@ class Settings
                 'cached_version' => CdnCatalog::version($id),
                 'cached_at' => CdnCatalog::fetchedAt($id),
                 'cached_count' => CdnCatalog::count($id),
-                'fetching' => $cdnFetchPending && self::libraryEnabled($settings, $id) && self::librarySource($settings, $id) === 'cdn',
+                'fetching' => CdnCatalog::isFetching($id),
                 'variants' => $library->variants(),
                 'variant_param' => $library->variantParam(),
                 'variant' => $variant,

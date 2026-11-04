@@ -24,7 +24,7 @@ final class PackageCatalog
     }
 
     /**
-     * @return array{version?: string, package?: string, defaultVariant?: string, listUnion?: bool, count?: int, variants?: array<string, int>, viewBox?: array<string, string>, viewBoxes?: array<string, array<string, string>>, brands?: list<string>, meta?: array<string, array<string, string>>, excluded?: list<string>}
+     * @return array{version?: string, package?: string, defaultVariant?: string, listUnion?: bool, count?: int, variants?: array<string, int>, viewBox?: array<string, string>, viewBoxes?: array<string, array<string, string>>, brands?: list<string>, meta?: array<string, array<string, string>>, excluded?: list<string>, glyph?: array{name: string, variant: string, inner: string}}
      */
     public static function index(string $libraryId): array
     {

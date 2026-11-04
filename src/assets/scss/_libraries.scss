@@ -63,7 +63,7 @@ $p: config.$prefix;
         align-items: center;
         gap: 8px;
         box-sizing: border-box;
-        height: 40px;
+        height: 44px;
         margin: 0;
         padding: 0 10px;
         border: 1px solid v(control-border);
@@ -333,6 +333,7 @@ $p: config.$prefix;
         .#{$p}__picker__search {
             flex: 1 1 auto;
             min-width: 0;
+            height: 44px;
         }
     }
 

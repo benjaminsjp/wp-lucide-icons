@@ -25,7 +25,10 @@ class Assets
         add_action('wp_enqueue_scripts', [$this, 'enqueueFront']);
         add_action('enqueue_block_assets', [$this, 'enqueueFront']);
         add_action('admin_enqueue_scripts', [$this, 'enqueueAdmin']);
+        add_action('admin_enqueue_scripts', [$this, 'enqueueQueuedApiStyle'], 100);
         add_action('enqueue_block_editor_assets', [$this, 'enqueueEditor']);
+        add_action('enqueue_block_editor_assets', [$this, 'enqueueQueuedApiStyle'], 100);
+        add_action('wp_enqueue_scripts', [$this, 'enqueueQueuedApiStyle'], 100);
         add_action('wp_enqueue_editor', [$this, 'enqueueTinyMcePicker']);
         add_filter('tiny_mce_before_init', [$this, 'editorContentStyle']);
     }
@@ -52,6 +55,8 @@ class Assets
 
     public function enqueueAdmin(string $hook): void
     {
+        $this->registerApiScript();
+
         if ($this->shouldEnqueueAdminStyle($hook)) {
             $this->enqueueWpiconsStyle('wpicons_admin_style');
         }
@@ -104,11 +109,14 @@ class Assets
         wp_add_inline_script('wpicons-admin-config', $config, 'after');
         wp_add_inline_script('wpicons-icon-editor-script', $config, 'before');
 
+        $this->enqueueApiScript();
         $this->enqueueTinyMcePicker();
     }
 
     public function enqueueTinyMcePicker(): void
     {
+        $this->enqueueApiScript();
+
         if ($this->pickerEnqueued) {
             return;
         }
@@ -183,6 +191,65 @@ class Assets
             'themeColors' => $this->themeColors(),
             'licensesUrl' => current_user_can(Menu::CAPABILITY) ? Settings::licensesUrl() : '',
         ];
+    }
+
+    /**
+     * Registers the public editor script (`window.wpIcons`) so other plugins can depend on `wpicons-api`.
+     */
+    private function registerApiScript(): void
+    {
+        if (wp_script_is('wpicons-api', 'registered')) {
+            return;
+        }
+
+        $script = WP_ICONS__PATH . 'build/api/index.js';
+        $asset = WP_ICONS__PATH . 'build/api/index.asset.php';
+        if (!is_readable($script)) {
+            return;
+        }
+
+        $deps = ['wp-element', 'wp-api-fetch', 'wp-i18n', 'wp-components'];
+        $version = WP_ICONS__VERSION;
+        if (is_readable($asset)) {
+            $meta = require $asset;
+            if (\is_array($meta)) {
+                $deps = $meta['dependencies'] ?? $deps;
+                $version = $meta['version'] ?? $version;
+            }
+        }
+
+        wp_register_script(
+            'wpicons-api',
+            WP_ICONS__URL . 'build/api/index.js',
+            $deps,
+            $version,
+            true
+        );
+        wp_localize_script('wpicons-api', 'WPIconsAdmin', $this->editorConfig());
+    }
+
+    private function enqueueApiScript(): void
+    {
+        $this->registerApiScript();
+        if (!wp_script_is('wpicons-api', 'registered')) {
+            return;
+        }
+
+        wp_enqueue_script('wpicons-api');
+        $this->enqueueQueuedApiStyle();
+    }
+
+    /**
+     * Picker styles for whoever enqueued `wpicons-api`, including another plugin.
+     */
+    public function enqueueQueuedApiStyle(): void
+    {
+        if (!wp_script_is('wpicons-api', 'enqueued')) {
+            return;
+        }
+
+        wp_enqueue_style('wp-components');
+        $this->enqueueWpiconsStyle('wpicons_api_style', ['wp-components']);
     }
 
     /**

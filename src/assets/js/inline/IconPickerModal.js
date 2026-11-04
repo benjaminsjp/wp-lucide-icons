@@ -4,6 +4,7 @@ import { Button } from '@wordpress/components';
 import IconPicker from '../picker/IconPicker';
 import IconStyleControls, { BrandNotice } from '../picker/IconStyleControls';
 import { fetchIcon } from '../picker/api';
+import LucideSvg from '../picker/icons';
 import { usePreviewBackdrop } from '../picker/contrast';
 import {
     brandPaint,
@@ -83,6 +84,7 @@ export default function IconPickerModal({
     onSelect,
     onClose,
     className = '',
+    allowedLibraries,
 }) {
     const defaults = pluginDefaults();
     const titleId = useId();
@@ -325,9 +327,7 @@ export default function IconPickerModal({
                         onClick={onClose}
                         aria-label={__('Close', 'wpicons')}
                     >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                            <path d="M18 6 6 18M6 6l12 12" />
-                        </svg>
+                        <LucideSvg name="x" size={20} />
                     </button>
                 </header>
                 <div className="wpicons__picker-dialog__body">
@@ -339,6 +339,7 @@ export default function IconPickerModal({
                             selectedLibrary={pending?.library || ''}
                             styleVariants={styleVariants}
                             colorModes={colorModes}
+                            allowedLibraries={allowedLibraries}
                             onLibraryChange={setBrowse}
                             onSelect={pick}
                         />

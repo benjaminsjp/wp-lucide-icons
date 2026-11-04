@@ -4,7 +4,6 @@
     "name": "wpicons/icon",
     "title": "WP Icons",
     "category": "media",
-    "icon": "star-filled",
     "description": "Insert an icon from Lucide, Material Symbols, Phosphor, Simple Icons, Tabler, Heroicons, Ionicons or Octicons.",
     "keywords": ["icon", "lucide", "material", "phosphor", "tabler", "svg"],
     "textdomain": "wpicons",

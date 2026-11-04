@@ -6,31 +6,29 @@ The format for this changelog is based on [Keep a Changelog](https://keepachange
 and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).  
 Dates use the [ISO 8601 date format](https://www.iso.org/iso-8601-date-and-time-format.html) of `YYYY-MM-DD`.
 
-## [Unreleased]
-
-### Changed
-
-- The Icon block now appears in the Media category.
-- WP Icons now lives under **Appearance → WP Icons**, with Library and Settings as tabs on one page. Old `admin.php?page=wp-icons` and `admin.php?page=wp-icons-settings` links redirect there.
-- Admin pages, settings saves, and the licenses link now require `edit_theme_options` instead of `manage_options`. A role that has `manage_options` but not `edit_theme_options` can no longer open them.
-
-## [2.0.0] - 2026-10-21
+## [2.0.0]
 
 ### Added
 
-- Gutenberg **Icon** block with library, name, size, color, and Lucide stroke width
-- Material Symbols Outlined as a second bundled icon library
-- Admin **Library** browser and top-level WP Icons menu
-- Settings for defaults and per-library source (plugin bundle or cached CDN)
+- Gutenberg **Icon** block in the Media category, with library, name, size, color, style or weight, and stroke width
+- Eight bundled libraries: Lucide, Material Symbols, Simple Icons, Phosphor, Tabler Icons, Heroicons, Ionicons, and Octicons, with style, weight, and brand-color options
+- Admin **Library** and **Settings** under **Appearance → WP Icons** (`edit_theme_options`), as tabs on one page
+- Settings for defaults and for enabling each library, its source (plugin bundle or cached CDN), style, stroke width, and color
 - `[wp_icon]` shortcode with a `library` attribute
 - Optional cached CDN catalog refresh per library when the plugin bundle is stale
 - Inline icons in Gutenberg RichText (paragraph, heading, and other text toolbars), with size, color, and stroke options
+- Public helpers `wpicons_get_icon()`, `wpicons_icon()`, `wpicons_icon_exists()`, and `wpicons_get_libraries()` for rendering icons from themes and plugins
+- Hooks `wpicons_loaded`, `wpicons_icon_args`, and `wpicons_icon_svg`
+- Editor script `wpicons-api` (`window.wpIcons`) with `getIcon`, a React `Icon`, `openPicker`, and `parseRef`
+- English and Norwegian translations
 
 ### Changed
 
 - Plugin renamed from Lucide Icons to WP Icons
 - Icon SVG comes from catalogs stored in the plugin, and the editor no longer loads bundled `lucide.min.js`
 - Text editor insert button replaced by the shared icon picker, with live preview and size, color, and stroke options
+- The block inserter, rich text toolbar, and classic editor button use the Lucide shapes mark
+- Icons with an accessible name use `role="img"` and `aria-label`. Decorative icons use `aria-hidden="true"` and `focusable="false"`
 - Styling uses theme colors
 - PHP classes load through a Composer PSR-4 autoload (`vendor/` is required)
 - WordPress minimum version is 6.6 and PHP minimum version is 8.1

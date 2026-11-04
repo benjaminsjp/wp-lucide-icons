@@ -58,6 +58,13 @@ class Plugin
         (new InlineIcons())->register();
         (new TinyMce())->register();
         (new CdnCatalog())->register();
+
+        /**
+         * Fires once WP Icons has registered its hooks and the public helpers are ready.
+         *
+         * @since 2.0.0
+         */
+        do_action('wpicons_loaded');
     }
 
     public function templates(): Template

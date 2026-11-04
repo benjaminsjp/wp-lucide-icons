@@ -17,7 +17,7 @@ if (!\defined('ABSPATH')) {
 final class PackageLibrary extends BaseLibrary
 {
     /** Registered package libraries, in picker order. */
-    public const IDS = ['phosphor', 'simple-icons', 'tabler', 'heroicons', 'ionicons', 'octicons'];
+    public const IDS = ['lucide', 'material-symbols', 'phosphor', 'simple-icons', 'tabler', 'heroicons', 'ionicons', 'octicons'];
 
     /** @var array<string, list<string>> */
     private array $unionNames = [];
@@ -33,11 +33,48 @@ final class PackageLibrary extends BaseLibrary
      * Static description of each library. Labels are translated on every call (cheap), so they are
      * never cached before the text domain is loaded.
      *
-     * @return array{label: string, package: string, param: string, variants: array<string, array{label: string, paint: string, stroke?: float}>, default: string, brandColors?: bool, brandPattern?: string, listAll?: bool, glyph: array{0: string, 1: string}}
+     * @return array{label: string, package: string, param: string, variants: array<string, array{label: string, paint: string, stroke?: float}>, default: string, brandColors?: bool, brandPattern?: string, listAll?: bool, markup?: string, glyph: array{0: string, 1: string}}
      */
     private function definition(): array
     {
-        return match ($this->id) {
+        $definition = self::builtin($this->id);
+        if ($definition === null) {
+            throw new \InvalidArgumentException('Unknown icon library: ' . $this->id);
+        }
+
+        return $definition;
+    }
+
+    /**
+     * Built-in libraries. An unknown id returns null so a later registration path can supply it.
+     *
+     * @return array{label: string, package: string, param: string, variants: array<string, array{label: string, paint: string, stroke?: float}>, default: string, brandColors?: bool, brandPattern?: string, listAll?: bool, markup?: string, glyph: array{0: string, 1: string}}|null
+     */
+    private static function builtin(string $id): ?array
+    {
+        return match ($id) {
+            'lucide' => [
+                'label' => __('Lucide Icons', 'wpicons'),
+                'package' => 'lucide-static',
+                'param' => '',
+                'default' => 'default',
+                'variants' => [
+                    'default' => ['label' => '', 'paint' => 'stroke', 'stroke' => 2.0],
+                ],
+                'markup' => 'lucide',
+                'glyph' => ['feather', 'default'],
+            ],
+            'material-symbols' => [
+                'label' => __('Material Symbols', 'wpicons'),
+                'package' => '@material-symbols/svg-400',
+                'param' => '',
+                'default' => 'default',
+                'variants' => [
+                    'default' => ['label' => '', 'paint' => 'fill'],
+                ],
+                'markup' => 'material',
+                'glyph' => ['interests', 'default'],
+            ],
             'simple-icons' => [
                 'label' => __('Simple Icons', 'wpicons'),
                 'package' => 'simple-icons',
@@ -105,7 +142,7 @@ final class PackageLibrary extends BaseLibrary
                 'listAll' => true,
                 'glyph' => ['logo-ionic', 'filled'],
             ],
-            default => [
+            'octicons' => [
                 'label' => __('Octicons', 'wpicons'),
                 'package' => '@primer/octicons',
                 'param' => '',
@@ -116,6 +153,7 @@ final class PackageLibrary extends BaseLibrary
                 // GitHub's own mark is excluded (trademark), so the library is shown with another glyph.
                 'glyph' => ['telescope', 'default'],
             ],
+            default => null,
         };
     }
 
@@ -211,22 +249,61 @@ final class PackageLibrary extends BaseLibrary
 
     public function bundledInner(string $name, string $variant = ''): ?string
     {
-        $icons = PackageCatalog::icons($this->id, $this->normalizeVariant($variant));
+        $canonical = $this->canonicalName($name, $variant);
+        if ($canonical === null) {
+            return null;
+        }
 
-        return isset($icons[$name]) && \is_string($icons[$name]) ? $icons[$name] : null;
+        $icons = PackageCatalog::icons($this->id, $this->normalizeVariant($variant));
+        $inner = $icons[$canonical] ?? null;
+
+        return \is_string($inner) ? $inner : null;
+    }
+
+    /**
+     * Catalog key for a name. Accepts either hyphen or underscore spelling.
+     */
+    public function canonicalName(string $name, string $variant = ''): ?string
+    {
+        $icons = PackageCatalog::icons($this->id, $this->normalizeVariant($variant));
+        if (isset($icons[$name]) && \is_string($icons[$name])) {
+            return $name;
+        }
+
+        // Lucide files are kebab-case and Material Symbols files are snake_case. Either form resolves.
+        $alt = str_contains($name, '-') ? str_replace('-', '_', $name) : str_replace('_', '-', $name);
+        if ($alt !== $name && isset($icons[$alt]) && \is_string($icons[$alt])) {
+            return $alt;
+        }
+
+        return null;
     }
 
     public function wrap(string $inner, IconOptions $options): string
     {
+        $definition = $this->definition();
+
+        return match ($definition['markup'] ?? 'package') {
+            'lucide' => Svg::lucide($inner, $options),
+            'material' => Svg::material($inner, $options),
+            default => $this->wrapPackage($inner, $options, $definition),
+        };
+    }
+
+    /**
+     * @param array{variants: array<string, array{paint: string}>, brandColors?: bool} $definition
+     */
+    private function wrapPackage(string $inner, IconOptions $options, array $definition): string
+    {
         $variant = $this->normalizeVariant($options->variant);
-        $paint = $this->definition()['variants'][$variant]['paint'];
+        $paint = $definition['variants'][$variant]['paint'];
         $hex = $this->hasBrandColors() ? (CatalogStore::meta($this->id, $options->name)['hex'] ?? null) : null;
 
         return Svg::package(
             $inner,
             $options,
             $this->id,
-            \count($this->definition()['variants']) > 1 ? $variant : '',
+            \count($definition['variants']) > 1 ? $variant : '',
             CatalogStore::viewBox($this->id, $options->name, $variant),
             $paint,
             \is_string($hex) ? $hex : null
@@ -333,6 +410,12 @@ final class PackageLibrary extends BaseLibrary
         $path = str_replace('\\', '/', $path);
 
         switch ($this->id) {
+            case 'lucide':
+                return preg_match('#/package/icons/([^/]+)\.svg$#', $path, $m) ? ['default', $m[1]] : null;
+
+            case 'material-symbols':
+                return preg_match('#/package/outlined/([^/]+)\.svg$#', $path, $m) ? ['default', $m[1]] : null;
+
             case 'simple-icons':
                 return preg_match('#/package/icons/([^/]+)\.svg$#', $path, $m) ? ['default', $m[1]] : null;
 

@@ -1,5 +1,5 @@
 $prefix: wpicons;
 
 @function prefix() {
-    @return if($prefix, #{$prefix}-, "");
+    @return if(sass($prefix): #{$prefix}-; else: "");
 }

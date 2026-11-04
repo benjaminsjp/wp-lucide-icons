@@ -184,7 +184,7 @@
             editor.addButton('wpicons', {
                 title: title,
                 tooltip: title,
-                icon: 'dashicon dashicons-star-filled',
+                icon: 'wpicons',
                 onclick: function () {
                     var node = editor.selection.getNode();
                     openPicker(editor, isInlineIcon(editor, node) ? node : null);

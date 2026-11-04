@@ -23,6 +23,7 @@ class Bootstrap
         }
 
         require_once $autoload;
+        require_once WP_ICONS__PATH . 'src/functions.php';
 
         add_action('plugins_loaded', static function () {
             Plugin::instance()->init();

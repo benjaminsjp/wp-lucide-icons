@@ -7,7 +7,7 @@ if (!\defined('ABSPATH')) {
 }
 
 /**
- * Defaults for single-style, non-brand libraries (Lucide, Material Symbols).
+ * Defaults for libraries. PackageLibrary overrides these for the bundled catalogs.
  */
 abstract class BaseLibrary implements LibraryInterface
 {

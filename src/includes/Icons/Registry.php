@@ -3,8 +3,7 @@
 namespace WPIcons\Icons;
 
 use WPIcons\Admin\Settings;
-use WPIcons\Icons\Lucide\LucideLibrary;
-use WPIcons\Icons\Material\MaterialSymbolsLibrary;
+use WPIcons\Api\Icons;
 use WPIcons\Icons\Package\PackageLibrary;
 
 if (!\defined('ABSPATH')) {
@@ -24,13 +23,9 @@ final class Registry
     public static function all(): array
     {
         if (self::$libraries === null) {
-            $list = [new LucideLibrary(), new MaterialSymbolsLibrary()];
-            foreach (PackageLibrary::IDS as $id) {
-                $list[] = new PackageLibrary($id);
-            }
-
             self::$libraries = [];
-            foreach ($list as $library) {
+            foreach (PackageLibrary::IDS as $id) {
+                $library = new PackageLibrary($id);
                 self::$libraries[$library->id()] = $library;
             }
         }
@@ -72,18 +67,12 @@ final class Registry
         }
 
         [$name, $variant] = $library->glyph();
-        $inner = $library->bundledInner($name, $variant);
-        if ($inner === null || $inner === '') {
-            return '';
-        }
 
-        return $library->wrap($inner, new IconOptions(
-            name: $name,
-            size: $size,
-            color: 'currentColor',
-            strokeWidth: 2.0,
-            class: 'wpicons__library-glyph',
-            variant: $variant,
-        ));
+        return Icons::bundled($id, $name, [
+            'size' => $size,
+            'variant' => $variant,
+            'color' => 'currentColor',
+            'class' => 'wpicons__library-glyph',
+        ]);
     }
 }

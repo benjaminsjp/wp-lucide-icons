@@ -100,7 +100,15 @@ Yes. There is an **Insert icon** button in the classic editor (TinyMCE), and the
 
 = Can I render an icon from PHP? =
 
-Yes: `( new WPIcons\Icons\Renderer() )->fromAttributes( [ 'library' => 'lucide', 'name' => 'heart' ] )` returns the SVG markup. An unknown name or a disabled library returns an empty string.
+Yes. `wpicons_get_icon( 'lucide:check' )` returns the SVG markup, and `wpicons_icon()` prints it. The string is already escaped; do not pass it through `wp_kses_post()`. A reference is `library:name` or `library:name:variant` (for example `phosphor:heart:bold`). A bare name uses the default library from Settings. An unknown name or a disabled library returns an empty string.
+
+`wpicons_get_icon( 'lucide:check', [ 'size' => 20, 'title' => 'Done' ] )` sets the size and an accessible name. Without a title the icon is decorative. On a button or link, leave the icon decorative and name the control.
+
+The lower-level call `( new WPIcons\Icons\Renderer() )->fromAttributes( [ 'library' => 'lucide', 'name' => 'heart' ] )` still works. An omitted library uses Lucide, and an omitted size is 24.
+
+= Can another plugin open the icon picker? =
+
+In the editor, enqueue the `wpicons-api` script (or depend on it) and call `wpIcons.openPicker()` or `wpIcons.getIcon( 'tabler:star' )`. That script is for users who can edit posts. On the front end, use the PHP helpers.
 
 = What is removed when I uninstall the plugin? =
 
@@ -115,22 +123,23 @@ Its settings, cached catalogs in `wp-content/uploads/wp-icons/`, transients, and
 
 == Changelog ==
 
-= Unreleased =
-* Changed: The Icon block now appears in the Media category.
-* Changed: WP Icons now lives under Appearance > WP Icons, with Library and Settings as tabs on one page. Old admin.php?page=wp-icons and admin.php?page=wp-icons-settings links redirect there.
-* Changed: Admin pages, settings saves, and the licenses link now require edit_theme_options instead of manage_options. A role that has manage_options but not edit_theme_options can no longer open them.
-
-= 2.0.0 - 2026-10-21 =
-* Added: Icon block with library, name, size, color, and Lucide stroke width.
-* Added: Material Symbols (Outlined) as a second bundled library.
-* Added: Simple Icons, Phosphor, Tabler Icons, Heroicons, Ionicons, and Octicons, with style, weight, and brand-color options and an all-libraries search in the icon picker.
-* Added: Admin Library browser and a top-level WP Icons menu.
-* Added: Settings for defaults and per-library source (plugin bundle or cached CDN).
+= 2.0.0 =
+* Added: Icon block in the Media category, with library, name, size, color, style or weight, and stroke width.
+* Added: Eight bundled libraries: Lucide, Material Symbols, Simple Icons, Phosphor, Tabler Icons, Heroicons, Ionicons, and Octicons, with style, weight, and brand-color options.
+* Added: Library and Settings under Appearance > WP Icons (edit_theme_options), as tabs on one page.
+* Added: Settings for defaults and for enabling each library, its source (plugin bundle or cached CDN), style, stroke width, and color.
 * Added: `[wp_icon]` shortcode with a `library` attribute.
+* Added: Optional cached CDN catalog refresh per library.
 * Added: Inline icons in rich text (paragraph, heading, and other text toolbars).
+* Added: `wpicons_get_icon()`, `wpicons_icon()`, `wpicons_icon_exists()`, and `wpicons_get_libraries()`.
+* Added: Hooks `wpicons_loaded`, `wpicons_icon_args`, and `wpicons_icon_svg`.
+* Added: Editor script `wpicons-api` (`window.wpIcons`) for previews and the icon picker.
+* Added: English and Norwegian translations.
 * Changed: Plugin renamed from Lucide Icons to WP Icons.
 * Changed: Icon SVG comes from catalogs stored in the plugin; the editor no longer loads `lucide.min.js`.
 * Changed: Classic editor button now uses the shared icon picker with live preview.
+* Changed: The block inserter, rich text toolbar, and classic editor button use the shapes mark.
+* Changed: Icons with an accessible name use role="img" and aria-label. Decorative icons stay hidden from assistive tech.
 * Changed: Requires WordPress 6.6 and PHP 8.1.
 * Deprecated: `[lucide_icon]` remains as a compatibility alias for Lucide icons.
 
@@ -165,7 +174,7 @@ Its settings, cached catalogs in `wp-content/uploads/wp-icons/`, transients, and
 == Upgrade Notice ==
 
 = 2.0.0 =
-Renamed to WP Icons and adds the Icon block and Material Symbols. Requires WordPress 6.6 and PHP 8.1. Existing `[lucide_icon]` shortcodes keep working.
+Renamed to WP Icons. Adds the Icon block, eight icon libraries, and PHP helpers. Requires WordPress 6.6 and PHP 8.1. Existing `[lucide_icon]` shortcodes keep working.
 
 == Third-party libraries & licenses ==
 

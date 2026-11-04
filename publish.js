@@ -63,7 +63,7 @@ fs.readFile(path.join(__dirname, process.argv[2]), "utf8", (err, data) => {
         archive.directory(`${folder}/`, `${root}${folder}`);
     });
 
-    const filesToZip = [`${pluginSlug}.php`, "bootstrap.php", "uninstall.php"];
+    const filesToZip = [`${pluginSlug}.php`, "bootstrap.php", "uninstall.php", "src/functions.php"];
     filesToZip.forEach((file) => {
         archive.file(file, { name: `${root}${file}` });
     });

@@ -80,7 +80,7 @@ To place an icon inside a paragraph, heading, or other text, use the **Insert ic
 
 ### Classic editor (TinyMCE)
 
-Use the star **Insert icon** button on the TinyMCE toolbar. The same control appears in the Classic block and other TinyMCE fields.
+Use the **Insert icon** button on the TinyMCE toolbar. The same control appears in the Classic block and other TinyMCE fields.
 
 ### Shortcode
 
@@ -92,11 +92,11 @@ Use the star **Insert icon** button on the TinyMCE toolbar. The same control app
 | Attribute | Default                               | Notes                                                                |
 | --------- | ------------------------------------- | -------------------------------------------------------------------- |
 | `library` | Settings → default library (`lucide`) | Any library id from [Icon libraries](#icon-libraries)                |
-| `name`    | `circle`                              | Icon name in that library                                            |
+| `name`    | empty                                 | Icon name in that library. Empty renders nothing                     |
 | `size`    | Settings (24)                         |                                                                      |
 | `color`   | Settings, per library                 | CSS color, or `brand` for the Simple Icons brand color               |
 | `stroke`  | Settings, per library (2)             | Stroke-based styles only (Lucide, Tabler outline, Heroicons outline) |
-| `weight`  | Settings, per library                 | Phosphor: `thin`, `light`, `regular`, `bold`, `fill`, `duotone`     |
+| `weight`  | Settings, per library                 | Phosphor: `thin`, `light`, `regular`, `bold`, `fill`, `duotone`      |
 | `style`   | Settings, per library                 | Tabler, Heroicons, and Ionicons styles, as shown on the Library page |
 | `width`   | empty                                 | Legacy alias for `stroke` when `stroke` is omitted                   |
 | `class`   | empty                                 | Extra class on the SVG                                               |
@@ -141,29 +141,18 @@ While editing, `pnpm start` rebuilds the JavaScript bundles, and `pnpm sass` wat
 
 ### Scripts
 
-| Command                    | What it does                                                                                     |
-| -------------------------- | ------------------------------------------------------------------------------------------------ |
-| `pnpm start`               | `@wordpress/scripts` in watch mode. Writes `build/` (Icon block, admin library, TinyMCE picker). |
-| `pnpm build`               | Production build of the same bundles.                                                            |
-| `pnpm sass`                | Watch `src/assets/scss` and write compressed CSS to `src/assets/css`.                            |
-| `pnpm sass:build`          | One-shot SCSS compile.                                                                           |
-| `pnpm sync-icons`          | Download Lucide and Material Symbols and rewrite the generated PHP maps.                         |
-| `pnpm sync-icons:lucide`   | Lucide only (`lucide-static`).                                                                   |
-| `pnpm sync-icons:material` | Material Symbols Outlined only (`@material-symbols/svg-400`).                                    |
-| `pnpm sync-icons:packages` | The six npm-package libraries, at the versions pinned in `package.json`, with the exclusions.     |
-| `pnpm publish`             | Zip a release with `node publish.js wp-lucide-icons.php`. This is not `npm publish`.             |
+| Command           | What it does                                                                                                    |
+| ----------------- | --------------------------------------------------------------------------------------------------------------- |
+| `pnpm start`      | `@wordpress/scripts` in watch mode. Writes `build/` (Icon block, admin library, TinyMCE picker, `wpicons-api`). |
+| `pnpm build`      | Production build of the same bundles.                                                                           |
+| `pnpm sass`       | Watch `src/assets/scss` and write compressed CSS to `src/assets/css`.                                           |
+| `pnpm sass:build` | One-shot SCSS compile.                                                                                          |
+| `pnpm sync-icons` | Rewrite every bundled catalog from the versions pinned in `package.json`.                                       |
+| `pnpm publish`    | Zip a release with `node publish.js wp-lucide-icons.php`. This is not `npm publish`.                            |
 
-Pass a version after `--` to pin a catalog. Without one, the script uses `latest`:
+Versions come from the pinned devDependencies. To bundle a newer Lucide or Material Symbols release, change the pin (`pnpm add -D lucide-static@x`) and run the matching sync script.
 
-```bash
-pnpm sync-icons:lucide -- 1.52.0
-pnpm sync-icons:material -- 0.48.0
-```
-
-Do not hand-edit the generated files:
-
-- `src/includes/Icons/LucideIcon.php`
-- `src/includes/Icons/Material/material-symbols-outlined-map.php`
+Do not hand-edit the generated files under `src/includes/Icons/Catalogs/`.
 
 ### Composer
 
@@ -199,7 +188,7 @@ pnpm publish
 
 The zip includes:
 
-- `wp-lucide-icons.php`, `bootstrap.php`, `uninstall.php`
+- `wp-lucide-icons.php`, `bootstrap.php`, `uninstall.php`, `src/functions.php`
 - `src/assets/css`, `src/assets/js`, `src/includes`, `src/languages`, `src/templates`
 - `build/`
 - `vendor/`
@@ -210,23 +199,69 @@ Run `pnpm sync-icons` before that sequence when the bundled catalogs should chan
 
 ## PHP
 
-Theme and plugin code can render an icon without a shortcode:
+Theme and plugin code can render an icon in one line. The helpers exist as soon as WP Icons has loaded. `wpicons_loaded` fires at the end of its setup. Guard with `function_exists` when your plugin might run without WP Icons.
+
+```php
+if ( function_exists( 'wpicons_get_icon' ) ) {
+    echo wpicons_get_icon( 'lucide:check', [ 'size' => 20, 'class' => 'my-plugin__icon' ] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped by WP Icons.
+}
+```
+
+`wpicons_icon()` prints that same markup. `wpicons_icon_exists()` reports whether the reference would render. `wpicons_get_libraries()` returns each library as an array (`id`, `label`, `enabled`, `variants`, `default_variant`, `supports`, `version`).
+
+The reference is `library:name` or `library:name:variant`, for example `lucide:check`, `material-symbols:arrow_back`, or `phosphor:heart:bold`. A bare name such as `check` uses the default library from Settings. `$args['variant']` overrides the variant in the reference. `$args['library']` and `$args['name']` are ignored.
+
+| Argument  | Default                  | Notes                                                                                  |
+| --------- | ------------------------ | -------------------------------------------------------------------------------------- |
+| `size`    | Settings default size    | `wpicons_get_icon()` only. The lower-level renderer below defaults to 24               |
+| `height`  | same as `size`           |                                                                                        |
+| `color`   | Settings, per library    | CSS color, `var(--token)`, `currentColor`, or `brand` for the Simple Icons brand color |
+| `stroke`  | Settings, per library    | Stroke-drawn styles only (Lucide, Tabler outline, Heroicons outline)                   |
+| `variant` | variant in the reference | Phosphor weight, or a Tabler, Heroicons, or Ionicons style. Overrides the reference    |
+| `class`   | empty                    | Extra class on the SVG                                                                 |
+| `title`   | empty                    | Accessible name. Empty means decorative (`aria-hidden="true"`, `focusable="false"`)    |
+
+The string is already escaped. Do not pass it through `wp_kses_post()`, which strips `<svg>`. A callback on `wpicons_icon_svg` has to return safe markup of its own.
+
+An icon with a `title` is exposed as `role="img"` with that name (`aria-label` plus a `<title>`). On a button or link, leave the icon decorative and put the accessible name on the control.
+
+### Hooks
+
+| Hook                | Kind   | Arguments                                                                                                                                 |
+| ------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `wpicons_loaded`    | action | none. Fires when WP Icons has finished setting up                                                                                         |
+| `wpicons_icon_args` | filter | `$attrs`, `$ref`. Runs for `wpicons_get_icon()` only, before the icon is rendered                                                         |
+| `wpicons_icon_svg`  | filter | `$svg`, `$library`, `$name`, `$context`. `$context` is `variant`, `size`, `color`, `stroke`, `class`, `title`. Runs for every render path |
+
+### Editor script
+
+The block editor and the classic editor enqueue a script with the handle `wpicons-api`. It is also registered on admin screens, so another plugin can list `wpicons-api` as a script dependency and call `window.wpIcons` when it is there. The REST routes behind it require `edit_posts`. On the front end, render icons with the PHP helpers.
+
+```js
+const svg = await wpIcons.getIcon("tabler:star", { size: 20 });
+const picked = await wpIcons.openPicker({ value: "lucide:check" });
+```
+
+`wpIcons.Icon` is a React component with props `icon`, `size`, `color`, `stroke`, `title`, and `className`. `icon` is the same `library:name[:variant]` reference. `wpIcons.parseRef()` splits a reference into `library`, `name`, and `variant`. `openPicker({ value, libraries })` resolves with `{ library, name, variant, size, color, stroke, title }`, or `null` when the dialog is closed. `libraries` is an optional list of library ids to show.
+
+### Lower-level (still supported)
 
 ```php
 use WPIcons\Icons\Renderer;
 
 echo (new Renderer())->fromAttributes([
-    'library' => 'lucide', // or material-symbols
+    'library' => 'lucide', // lucide, material-symbols, simple-icons, phosphor, tabler, heroicons, ionicons, octicons
     'name'    => 'heart',
-    'size'    => 24,
+    'size'    => 24,       // omitted size is 24 here, not the Settings default
     'color'   => 'currentColor',
-    'stroke'  => 2,        // Lucide only
+    'stroke'  => 2,        // stroke-drawn styles
+    'variant' => '',       // Phosphor weight, or a Tabler / Heroicons / Ionicons style
     'class'   => '',
     'title'   => 'Favorite',
 ]);
 ```
 
-Use any library id from [Icon libraries](#icon-libraries). `stroke` applies to stroke-based styles, `weight` to Phosphor, and `style` to Tabler, Heroicons, and Ionicons. An unknown name or a disabled library returns an empty string.
+An omitted `library` uses `lucide`. An empty `library` uses the Settings default. `weight` and `style` are still accepted as aliases of `variant`. An unknown name or a disabled library returns an empty string. This output also passes through `wpicons_icon_svg`.
 
 ## Trademarks & usage responsibility
 

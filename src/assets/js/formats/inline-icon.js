@@ -3,6 +3,7 @@ import { __ } from '@wordpress/i18n';
 import { dispatch, select, subscribe } from '@wordpress/data';
 import { insertObject, registerFormatType } from '@wordpress/rich-text';
 import { RichTextToolbarButton } from '@wordpress/block-editor';
+import LucideSvg, { PLUGIN_MARK } from '../picker/icons';
 import IconPickerModal from '../inline/IconPickerModal';
 import {
     migrateInlineIconHtml,
@@ -174,7 +175,7 @@ function Edit({
     return (
         <>
             <RichTextToolbarButton
-                icon="star-filled"
+                icon={<LucideSvg name={PLUGIN_MARK} size={20} />}
                 title={__('Insert icon', 'wpicons')}
                 onClick={openPicker}
                 isActive={isObjectActive}

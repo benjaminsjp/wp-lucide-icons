@@ -22,6 +22,10 @@ class CopyBlockMetadataPlugin {
                 'build/tinymce/picker-rtl.css',
                 'build/tinymce/style-index.css',
                 'build/tinymce/style-index-rtl.css',
+                'build/api/index.css',
+                'build/api/index-rtl.css',
+                'build/api/style-index.css',
+                'build/api/style-index-rtl.css',
             ]) {
                 fs.rmSync(path.resolve(__dirname, file), { force: true });
             }
@@ -35,6 +39,7 @@ module.exports = {
         'blocks/icon/index': path.resolve(__dirname, 'src/assets/js/blocks/icon/index.js'),
         'admin/library/index': path.resolve(__dirname, 'src/assets/js/admin/library/index.js'),
         'tinymce/picker': path.resolve(__dirname, 'src/assets/js/tinymce/picker.js'),
+        'api/index': path.resolve(__dirname, 'src/assets/js/api/index.js'),
     },
     plugins: [...defaultConfig.plugins, new CopyBlockMetadataPlugin()],
 };

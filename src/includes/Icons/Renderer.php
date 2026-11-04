@@ -3,6 +3,7 @@
 namespace WPIcons\Icons;
 
 use WPIcons\Admin\Settings;
+use WPIcons\Icons\Package\PackageLibrary;
 
 if (!\defined('ABSPATH')) {
     exit;
@@ -37,8 +38,37 @@ final class Renderer
 
         $options = clone $options;
         $options->variant = $resolved['variant'];
+        if ($library instanceof PackageLibrary) {
+            $canonical = $library->canonicalName($options->name, $resolved['variant']);
+            if (\is_string($canonical) && $canonical !== '') {
+                $options->name = $canonical;
+            }
+        }
 
-        return $library->wrap($resolved['inner'], $options);
+        $svg = $library->wrap($resolved['inner'], $options);
+
+        /**
+         * Filters the SVG for every icon WP Icons renders (block, shortcode, inline, REST, helpers).
+         *
+         * The plugin's own markup is escaped. A callback that replaces it must return safe markup.
+         *
+         * @since 2.0.0
+         *
+         * @param string               $svg     SVG markup.
+         * @param string               $library Library id.
+         * @param string               $name    Icon name.
+         * @param array<string, mixed> $context variant, size, color, stroke, class, title.
+         */
+        $svg = apply_filters('wpicons_icon_svg', $svg, $libraryId, $options->name, [
+            'variant' => $options->variant,
+            'size' => $options->size,
+            'color' => $options->color,
+            'stroke' => $options->strokeWidth,
+            'class' => $options->class,
+            'title' => \is_string($options->hiddenOrTitle) ? $options->hiddenOrTitle : '',
+        ]);
+
+        return \is_string($svg) ? $svg : '';
     }
 
     /**
