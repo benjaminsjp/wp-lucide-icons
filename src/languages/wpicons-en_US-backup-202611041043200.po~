@@ -3,10 +3,10 @@ msgstr ""
 "Project-Id-Version: WP Icons\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-10-26 09:20+0000\n"
-"PO-Revision-Date: 2026-10-26 09:25+0000\n"
+"PO-Revision-Date: 2026-10-26 10:19+0000\n"
 "Last-Translator: \n"
-"Language-Team: Norwegian (Bokmål)\n"
-"Language: nb_NO\n"
+"Language-Team: English (United States)\n"
+"Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,34 +21,37 @@ msgid ""
 "Icons and other various icon libraries. Integrates with some WordPress "
 "themes like Flatsome."
 msgstr ""
+"Adds icon elements to place on pages, uses icons from Lucide Icons, Material "
+"Icons and other various icon libraries. Integrates with some WordPress "
+"themes like Flatsome."
 
 #: src/includes/Admin/Assets.php:369
 msgid "Alert"
-msgstr ""
+msgstr "Alert"
 
 #: src/includes/Admin/Settings.php:169
 msgid "At least one icon library must stay enabled."
-msgstr ""
+msgstr "At least one icon library must stay enabled."
 
 #: build/blocks/icon/block.json:1 src/assets/js/blocks/icon/block.json:1
 msgctxt "block description"
 msgid "Insert an icon from Lucide Icons or Material Symbols."
-msgstr ""
+msgstr "Insert an icon from Lucide Icons or Material Symbols."
 
 #: build/blocks/icon/block.json:1 src/assets/js/blocks/icon/block.json:1
 msgctxt "block keyword"
 msgid "icon"
-msgstr ""
+msgstr "icon"
 
 #: build/blocks/icon/block.json:1 src/assets/js/blocks/icon/block.json:1
 msgctxt "block keyword"
 msgid "lucide"
-msgstr ""
+msgstr "lucide"
 
 #: build/blocks/icon/block.json:1 src/assets/js/blocks/icon/block.json:1
 msgctxt "block keyword"
 msgid "material"
-msgstr ""
+msgstr "material"
 
 #: build/blocks/icon/block.json:1 src/assets/js/blocks/icon/block.json:1
 msgctxt "block keyword"
@@ -58,13 +61,15 @@ msgstr "svg"
 #: build/blocks/icon/block.json:1 src/assets/js/blocks/icon/block.json:1
 msgctxt "block title"
 msgid "Icon"
-msgstr ""
+msgstr "Icon"
 
 #: src/templates/admin/library.php:11
 msgid ""
 "Browse bundled icon libraries, preview customization, and copy a shortcode. "
 "In the block editor, insert the Icon block to place an icon on a page."
 msgstr ""
+"Browse bundled icon libraries, preview customization, and copy a shortcode. "
+"In the block editor, insert the Icon block to place an icon on a page."
 
 #. 1: npm package, 2: bundled version
 #: src/templates/admin/settings.php:113
@@ -73,20 +78,22 @@ msgid ""
 "Bundled catalog is %1$s %2$s. CDN downloads a newer package in the "
 "background and stores it on this site."
 msgstr ""
+"Bundled catalog is %1$s %2$s. CDN downloads a newer package in the "
+"background and stores it on this site."
 
 #. 1: cached version, 2: icon count, 3: date
 #: src/templates/admin/settings.php:145
 #, php-format
 msgid "Cached CDN catalog: %1$s (%2$d icons)%3$s."
-msgstr ""
+msgstr "Cached CDN catalog: %1$s (%2$d icons)%3$s."
 
 #: src/templates/admin/settings.php:108
 msgid "CDN (jsDelivr / npm, cached)"
-msgstr ""
+msgstr "CDN (jsDelivr / npm, cached)"
 
 #: src/templates/admin/settings.php:123
 msgid "CDN version"
-msgstr ""
+msgstr "CDN version"
 
 #. %s: icon library label
 #: src/includes/Admin/Settings.php:148
@@ -94,61 +101,65 @@ msgstr ""
 msgid ""
 "CDN version for %s must be “latest” or a valid semver (for example 0.468.0)."
 msgstr ""
+"CDN version for %s must be “latest” or a valid semver (for example 0.468.0)."
 
 #: src/templates/admin/settings.php:139
 msgid ""
 "Could not load versions from npm. Enter “latest” or a semver such as 0.468.0."
 msgstr ""
+"Could not load versions from npm. Enter “latest” or a semver such as 0.468.0."
 
 #: src/templates/admin/settings.php:51
 msgid "Default color"
-msgstr ""
+msgstr "Default color"
 
 #: src/templates/admin/settings.php:29
 msgid "Default library"
-msgstr ""
+msgstr "Default library"
 
 #: src/templates/admin/settings.php:43
 msgid "Default size"
-msgstr ""
+msgstr "Default size"
 
 #: src/templates/admin/settings.php:60
 msgid "Default stroke width"
-msgstr ""
+msgstr "Default stroke width"
 
 #: src/templates/admin/settings.php:25
 msgid "Defaults"
-msgstr ""
+msgstr "Defaults"
 
 #: src/templates/admin/settings.php:88
 msgid "Enabled"
-msgstr ""
+msgstr "Enabled"
 
 #. URI of the plugin
-msgid "https://wp-icons.com/"
-msgstr ""
+msgid "https://github.com/kimlukasmyrvold/wp-lucide-icons"
+msgstr "https://github.com/kimlukasmyrvold/wp-lucide-icons"
 
 #. Author URI of the plugin
 msgid ""
 "https://www.kimlukas.dev/?utm_source=wordpress&utm_medium=wp-"
 "icons&utm_campaign=author_uri"
 msgstr ""
+"https://www.kimlukas.dev/?utm_source=wordpress&utm_medium=wp-"
+"icons&utm_campaign=author_uri"
 
 #: src/templates/admin/settings.php:69
 msgid "Icon libraries"
-msgstr ""
+msgstr "Icon libraries"
 
 #: src/includes/Admin/Menu.php:41
 msgid "Icon Library"
-msgstr ""
+msgstr "Icon Library"
 
 #: src/includes/Rest/IconsController.php:218
 msgid "Icon not found."
-msgstr ""
+msgstr "Icon not found."
 
 #: src/templates/admin/settings.php:97 src/templates/admin/settings.php:100
 msgid "Icon source"
-msgstr ""
+msgstr "Icon source"
 
 #: src/templates/admin/settings.php:70
 msgid ""
@@ -156,68 +167,73 @@ msgid ""
 "updated and you need a newer catalog. CDN catalogs are cached locally and "
 "are never fetched during page views."
 msgstr ""
+"Icons are stored in the plugin. Choose CDN only if this plugin has not been "
+"updated and you need a newer catalog. CDN catalogs are cached locally and "
+"are never fetched during page views."
 
 #. Author of the plugin
 msgid "Kim Lukas Myrvold"
-msgstr ""
+msgstr "Kim Lukas Myrvold"
 
 #: src/templates/admin/settings.php:129
 msgid "latest"
-msgstr ""
+msgstr "latest"
 
 #: src/includes/Admin/Menu.php:42 src/includes/Admin/Settings.php:230
 msgid "Library"
-msgstr ""
+msgstr "Library"
 
 #: src/includes/Icons/Lucide/LucideLibrary.php:23
 msgid "Lucide Icons"
-msgstr ""
+msgstr "Lucide Icons"
 
 #: src/includes/Icons/Material/MaterialSymbolsLibrary.php:22
 msgid "Material Symbols"
-msgstr ""
+msgstr "Material Symbols"
 
 #: src/templates/admin/settings.php:154
 msgid ""
 "No CDN catalog cached yet. Save with CDN selected to fetch one in the "
 "background."
 msgstr ""
+"No CDN catalog cached yet. Save with CDN selected to fetch one in the "
+"background."
 
 #: src/templates/admin/settings.php:103
 msgid "Plugin (bundled)"
-msgstr ""
+msgstr "Plugin (bundled)"
 
 #: src/includes/Admin/Assets.php:351
 msgid "Primary"
-msgstr ""
+msgstr "Primary"
 
 #: src/includes/Admin/Assets.php:357
 msgid "Secondary"
-msgstr ""
+msgstr "Secondary"
 
 #: src/includes/Admin/Menu.php:51 src/includes/Admin/Settings.php:231
 msgid "Settings"
-msgstr ""
+msgstr "Settings"
 
 #: src/templates/admin/settings.php:92
 msgid "Show this library in the picker and allow rendering its icons."
-msgstr ""
+msgstr "Show this library in the picker and allow rendering its icons."
 
 #: src/includes/Admin/Assets.php:363
 msgid "Success"
-msgstr ""
+msgstr "Success"
 
 #: src/includes/Rest/IconsController.php:133
 msgid "Unknown or disabled icon library."
-msgstr ""
+msgstr "Unknown or disabled icon library."
 
 #: src/templates/admin/settings.php:55
 msgid "Use currentColor to inherit text color, or a CSS color."
-msgstr ""
+msgstr "Use currentColor to inherit text color, or a CSS color."
 
 #: src/templates/admin/settings.php:64
 msgid "Used by stroke-based libraries such as Lucide."
-msgstr ""
+msgstr "Used by stroke-based libraries such as Lucide."
 
 #. Name of the plugin
 #: src/includes/Admin/Menu.php:30 src/includes/Admin/Menu.php:31
@@ -230,7 +246,9 @@ msgid ""
 "WP Icons is missing Composer dependencies. Run composer install in the "
 "plugin directory."
 msgstr ""
+"WP Icons is missing Composer dependencies. Run composer install in the "
+"plugin directory."
 
 #: src/includes/Admin/Menu.php:50
 msgid "WP Icons Settings"
-msgstr ""
+msgstr "WP Icons Settings"

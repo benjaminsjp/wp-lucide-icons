@@ -1,0 +1,577 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Icons\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-26 09:20+0000\n"
+"PO-Revision-Date: 2026-11-04 10:43+0000\n"
+"Last-Translator: \n"
+"Language-Team: Norwegian (Bokmål)\n"
+"Language: nb_NO\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.8.9; wp-7.1.3; php-8.3.35\n"
+"X-Domain: wpicons"
+
+#. 1: number of enabled icon libraries, 2: total number of icon libraries
+#: src/templates/admin/settings.php:106
+#, php-format
+msgid "%1$d of %2$d enabled"
+msgstr ""
+
+#. 1: npm package, 2: bundled version
+#: src/templates/admin/settings.php:316
+#, php-format
+msgid "%1$s · %2$s"
+msgstr ""
+
+#: src/templates/admin/settings.php:590 src/templates/admin/settings.php:591
+msgid "%d unsaved change"
+msgid_plural "%d unsaved changes"
+msgstr[0] ""
+msgstr[1] ""
+
+#. %s: icon library label
+#: src/templates/admin/settings.php:361
+#, php-format
+msgid "%s settings"
+msgstr ""
+
+#: src/templates/admin/settings.php:511
+msgid "0.25–4 · step 0.25"
+msgstr ""
+
+#: src/templates/admin/settings.php:187
+msgid "8–256 px"
+msgstr ""
+
+#. Description of the plugin
+msgid ""
+"Adds icon elements to place on pages, uses icons from Lucide Icons, Material "
+"Icons and other various icon libraries. Integrates with some WordPress "
+"themes like Flatsome."
+msgstr ""
+"Legger til ikonelementer som kan plasseres på sider; benytter ikoner fra "
+"Lucide Icons, Material Icons og diverse andre ikonbiblioteker. Integreres "
+"med enkelte WordPress-temaer, som for eksempel Flatsome."
+
+#: src/includes/Admin/Assets.php:445
+msgid "Alert"
+msgstr "Varsel"
+
+#: src/templates/admin/settings.php:251
+msgid "All"
+msgstr ""
+
+#: src/includes/Admin/Settings.php:287
+msgid "At least one icon library must stay enabled."
+msgstr "Minst ett ikonbibliotek må forbli aktivert."
+
+#: src/templates/admin/licenses.php:31
+msgid "Back to settings"
+msgstr ""
+
+#: build/blocks/icon/block.json:1 src/assets/js/blocks/icon/block.json:1
+msgctxt "block description"
+msgid ""
+"Insert an icon from Lucide, Material Symbols, Phosphor, Simple Icons, Tabler,"
+" Heroicons, Ionicons or Octicons."
+msgstr ""
+
+#: build/blocks/icon/block.json:1 src/assets/js/blocks/icon/block.json:1
+msgctxt "block keyword"
+msgid "icon"
+msgstr "ikon"
+
+#: build/blocks/icon/block.json:1 src/assets/js/blocks/icon/block.json:1
+msgctxt "block keyword"
+msgid "lucide"
+msgstr "lucide"
+
+#: build/blocks/icon/block.json:1 src/assets/js/blocks/icon/block.json:1
+msgctxt "block keyword"
+msgid "material"
+msgstr "material"
+
+#: build/blocks/icon/block.json:1 src/assets/js/blocks/icon/block.json:1
+msgctxt "block keyword"
+msgid "phosphor"
+msgstr ""
+
+#: build/blocks/icon/block.json:1 src/assets/js/blocks/icon/block.json:1
+msgctxt "block keyword"
+msgid "svg"
+msgstr "svg"
+
+#: build/blocks/icon/block.json:1 src/assets/js/blocks/icon/block.json:1
+msgctxt "block keyword"
+msgid "tabler"
+msgstr ""
+
+#: build/blocks/icon/block.json:1 src/assets/js/blocks/icon/block.json:1
+#, fuzzy
+#| msgid "Icon"
+msgctxt "block title"
+msgid "WP Icons"
+msgstr "Ikon"
+
+#: src/includes/Icons/Package/PackageLibrary.php:99
+msgid "Bold"
+msgstr ""
+
+#: src/templates/admin/settings.php:535
+msgid "Brand color"
+msgstr ""
+
+#: src/templates/admin/settings.php:336
+msgid "Brand icons"
+msgstr ""
+
+#: src/templates/admin/settings.php:107
+msgid ""
+"Brand icons are trademarks of their owners and may have their own usage "
+"guidelines. Using them doesn’t imply endorsement."
+msgstr ""
+
+#: src/templates/admin/library.php:9
+msgid ""
+"Browse bundled icon libraries, preview customization, and copy a shortcode. "
+"In the block editor, insert the Icon block to place an icon on a page."
+msgstr ""
+"Bla gjennom inkluderte ikonbiblioteker, forhåndsvis tilpasninger, og kopier "
+"en kortkode. I blokkredigeringsverktøyet setter du inn Ikon-blokken for å "
+"plassere et ikon på en side."
+
+#: src/templates/admin/settings.php:323
+msgid "Bundled"
+msgstr ""
+
+#. 1: npm package, 2: bundled version
+#: src/templates/admin/settings.php:393
+#, php-format
+msgid ""
+"Bundled catalog is %1$s %2$s. CDN downloads a newer package in the "
+"background and stores it on this site."
+msgstr ""
+"Den samlede katalogen er %1$s %2$s. CDN-en laster ned en nyere pakke i "
+"bakgrunnen og lagrer den på dette nettstedet."
+
+#: src/templates/admin/settings.php:292
+msgid "Cached"
+msgstr ""
+
+#. 1: cached version, 2: icon count, 3: date
+#: src/templates/admin/settings.php:452
+#, php-format
+msgid "Cached CDN catalog: %1$s (%2$d icons)%3$s."
+msgstr "Bufret CDN-katalog: %1$s (%2$d ikoner)%3$s."
+
+#: src/templates/admin/settings.php:598
+msgid "Cancel"
+msgstr ""
+
+#: src/templates/admin/settings.php:324
+msgid "CDN"
+msgstr ""
+
+#: src/templates/admin/settings.php:387
+msgid "CDN (npm, cached)"
+msgstr ""
+
+#: src/templates/admin/settings.php:401
+msgid "CDN version"
+msgstr "CDN-versjon"
+
+#. %s: icon library label
+#: src/includes/Admin/Settings.php:241
+#, php-format
+msgid ""
+"CDN version for %s must be “latest” or a valid semver (for example 0.468.0)."
+msgstr ""
+"CDN-versjonen for %s må være «nyeste» eller en gyldig semver (for eksempel 0."
+"468.0)."
+
+#: src/templates/admin/settings.php:585 src/templates/admin/settings.php:595
+msgid "Changes apply to new icons. Existing blocks keep their own settings."
+msgstr ""
+
+#: src/templates/admin/settings.php:428
+msgid ""
+"Could not load versions from npm. Enter “latest” or a semver such as 0.468.0."
+msgstr ""
+"Kunne ikke laste inn versjoner fra npm. Angi «latest» eller en semver, for "
+"eksempel 0.468.0."
+
+#: src/templates/admin/settings.php:537
+msgid "Custom"
+msgstr ""
+
+#: src/templates/admin/settings.php:558
+msgid "Custom color"
+msgstr ""
+
+#: src/templates/admin/settings.php:331
+msgid "Default"
+msgstr ""
+
+#: src/templates/admin/settings.php:207 src/templates/admin/settings.php:223
+msgid "Default color"
+msgstr "Standardfarge"
+
+#: src/templates/admin/settings.php:541
+msgid "Default color mode"
+msgstr ""
+
+#: src/templates/admin/settings.php:138
+msgid "Default library"
+msgstr "Standardbibliotek"
+
+#: src/templates/admin/settings.php:186 src/templates/admin/settings.php:198
+msgid "Default size"
+msgstr "Standardstørrelse"
+
+#: src/templates/admin/settings.php:510 src/templates/admin/settings.php:522
+msgid "Default stroke width"
+msgstr "Standard strekbredde"
+
+#: src/templates/admin/settings.php:299
+msgid "Default style"
+msgstr ""
+
+#: src/templates/admin/settings.php:299
+msgid "Default weight"
+msgstr ""
+
+#: src/templates/admin/settings.php:132
+msgid "Defaults"
+msgstr "Standardinnstillinger"
+
+#: src/templates/admin/settings.php:468
+msgid "Defaults for this library"
+msgstr ""
+
+#: src/templates/admin/settings.php:253
+msgid "Disabled"
+msgstr ""
+
+#: src/templates/admin/settings.php:178
+msgid "Disabled libraries are managed below."
+msgstr ""
+
+#: src/templates/admin/settings.php:119
+msgid "Dismiss this notice"
+msgstr ""
+
+#: src/includes/Icons/Package/PackageLibrary.php:101
+msgid "Duotone"
+msgstr ""
+
+#. %s: icon library label
+#: src/templates/admin/settings.php:344
+#, php-format
+msgid "Enable %s"
+msgstr ""
+
+#: src/templates/admin/settings.php:252
+msgid "Enabled"
+msgstr "Aktivert"
+
+#: src/templates/admin/settings.php:158
+msgid "Enabled libraries"
+msgstr ""
+
+#: src/templates/admin/settings.php:290
+msgid "Error"
+msgstr ""
+
+#. 1: npm package, 2: requested version
+#: src/templates/admin/settings.php:445
+#, php-format
+msgid ""
+"Fetching %1$s@%2$s in the background. The bundled catalog is used until it "
+"finishes."
+msgstr ""
+
+#: src/templates/admin/settings.php:83
+msgid "Fetching the CDN catalog in the background."
+msgstr ""
+
+#: src/templates/admin/settings.php:291
+msgid "Fetching…"
+msgstr ""
+
+#: src/includes/Icons/Package/PackageLibrary.php:100
+msgid "Fill"
+msgstr ""
+
+#: src/includes/Icons/Package/PackageLibrary.php:113
+#: src/includes/Icons/Package/PackageLibrary.php:138
+msgid "Filled"
+msgstr ""
+
+#: src/includes/Icons/Package/PackageLibrary.php:119
+msgid "Heroicons"
+msgstr ""
+
+#. URI of the plugin
+msgid "https://github.com/kimlukasmyrvold/wp-lucide-icons"
+msgstr "https://github.com/kimlukasmyrvold/wp-lucide-icons"
+
+#. Author URI of the plugin
+msgid ""
+"https://www.kimlukas.dev/?utm_source=wordpress&utm_medium=wp-"
+"icons&utm_campaign=author_uri"
+msgstr ""
+"https://www.kimlukas.dev/?utm_source=wordpress&utm_medium=wp-"
+"icons&utm_campaign=author_uri"
+
+#: src/templates/admin/settings.php:234
+msgid "Icon libraries"
+msgstr "Ikonbiblioteker"
+
+#: src/templates/admin/licenses.php:33
+msgid "Icon licenses"
+msgstr ""
+
+#: src/includes/Rest/IconsController.php:393
+msgid "Icon not found."
+msgstr "Ikonet ble ikke funnet."
+
+#: src/templates/admin/settings.php:379
+msgid "Icon source"
+msgstr "Kilde til ikon"
+
+#: src/templates/admin/settings.php:239
+msgid ""
+"Icons are stored in the plugin. Choose CDN only if this plugin has not been "
+"updated and you need a newer catalog. CDN catalogs are cached locally and "
+"are never fetched during page views."
+msgstr ""
+"Ikoner er lagret i utvidelsen. Velg CDN kun dersom denne utvidelsen ikke er "
+"oppdatert, og du har behov for en nyere katalog. CDN-kataloger mellomlagres "
+"lokalt og hentes aldri inn i forbindelse med sidevisninger."
+
+#: src/templates/admin/settings.php:576
+msgid ""
+"Icons are third-party works under their own licenses. You’re responsible for "
+"making sure your use complies with each icon’s license and the owner’s "
+"guidelines."
+msgstr ""
+
+#: src/templates/admin/licenses.php:35
+msgid ""
+"Icons are third-party works under their own licenses. You’re responsible for "
+"making sure your use complies with each icon’s license and the owner’s "
+"guidelines. Brand icons are trademarks of their owners; using them doesn’t "
+"imply endorsement."
+msgstr ""
+
+#: src/templates/admin/settings.php:536
+msgid "Inherit text"
+msgstr ""
+
+#: src/templates/admin/settings.php:212
+msgid "Inherit text color"
+msgstr ""
+
+#: src/includes/Icons/Package/PackageLibrary.php:132
+msgid "Ionicons"
+msgstr ""
+
+#. Author of the plugin
+msgid "Kim Lukas Myrvold"
+msgstr "Kim Lukas Myrvold"
+
+#: src/templates/admin/settings.php:411
+msgid "latest"
+msgstr "nyeste"
+
+#: src/includes/Admin/Settings.php:344
+#: src/templates/admin/partials/header.php:18
+msgid "Library"
+msgstr "Bibliotek"
+
+#: src/templates/admin/licenses.php:21
+msgid ""
+"License texts and notices for the icon libraries included with this plugin."
+msgstr ""
+
+#: src/includes/Icons/Package/PackageLibrary.php:97
+msgid "Light"
+msgstr ""
+
+#: src/includes/Icons/Package/PackageLibrary.php:57
+msgid "Lucide Icons"
+msgstr "Lucide Icons"
+
+#: src/includes/Icons/Package/PackageLibrary.php:68
+msgid "Material Symbols"
+msgstr "Material Symbols"
+
+#: src/includes/Icons/Package/PackageLibrary.php:127
+msgid "Micro"
+msgstr ""
+
+#: src/includes/Icons/Package/PackageLibrary.php:126
+msgid "Mini"
+msgstr ""
+
+#: src/templates/admin/settings.php:460
+msgid ""
+"No CDN catalog cached yet. Save with CDN selected to fetch one in the "
+"background."
+msgstr ""
+"Ingen CDN-katalog er bufret ennå. Lagre med CDN valgt for å hente en i "
+"bakgrunnen."
+
+#: src/templates/admin/settings.php:569
+msgid "No libraries match."
+msgstr ""
+
+#: src/templates/admin/licenses.php:40
+msgid "No license files were found in the plugin’s licenses folder."
+msgstr ""
+
+#: src/templates/admin/settings.php:293
+msgid "Not cached"
+msgstr ""
+
+#: src/includes/Icons/Package/PackageLibrary.php:146
+msgid "Octicons"
+msgstr ""
+
+#: src/templates/admin/settings.php:181
+msgid "Only enabled libraries can be the default."
+msgstr ""
+
+#: src/includes/Icons/Package/PackageLibrary.php:112
+#: src/includes/Icons/Package/PackageLibrary.php:124
+#: src/includes/Icons/Package/PackageLibrary.php:137
+msgid "Outline"
+msgstr ""
+
+#. %s: icon library label
+#: src/templates/admin/settings.php:472
+#, php-format
+msgid "Override the global defaults for new icons from %s."
+msgstr ""
+
+#: src/includes/Icons/Package/PackageLibrary.php:91
+msgid "Phosphor"
+msgstr ""
+
+#: src/templates/admin/settings.php:221 src/templates/admin/settings.php:556
+msgid "Pick a color"
+msgstr ""
+
+#: src/templates/admin/settings.php:383
+msgid "Plugin (bundled)"
+msgstr "Plugin (inkludert)"
+
+#: src/includes/Admin/Assets.php:427
+msgid "Primary"
+msgstr "Primær"
+
+#: src/templates/admin/settings.php:202
+msgid "px"
+msgstr ""
+
+#: src/includes/Icons/Package/PackageLibrary.php:98
+msgid "Regular"
+msgstr ""
+
+#: src/templates/admin/settings.php:599
+msgid "Save changes"
+msgstr ""
+
+#: src/templates/admin/settings.php:245 src/templates/admin/settings.php:246
+msgid "Search libraries"
+msgstr ""
+
+#: src/includes/Admin/Assets.php:433
+msgid "Secondary"
+msgstr "Sekundær"
+
+#: src/templates/admin/settings.php:43
+msgid ""
+"Set defaults for new icons and choose where each icon library is loaded from."
+msgstr ""
+
+#: src/includes/Admin/Settings.php:345
+#: src/templates/admin/partials/header.php:23
+msgid "Settings"
+msgstr "Innstillinger"
+
+#: src/templates/admin/settings.php:81
+msgid "Settings saved."
+msgstr ""
+
+#: src/includes/Icons/Package/PackageLibrary.php:139
+msgid "Sharp"
+msgstr ""
+
+#: src/templates/admin/settings.php:248
+msgid "Show libraries"
+msgstr ""
+
+#: src/includes/Icons/Package/PackageLibrary.php:79
+msgid "Simple Icons"
+msgstr ""
+
+#: src/includes/Icons/Package/PackageLibrary.php:125
+msgid "Solid"
+msgstr ""
+
+#: src/includes/Admin/Assets.php:439
+msgid "Success"
+msgstr "Suksess"
+
+#: src/includes/Icons/Package/PackageLibrary.php:107
+msgid "Tabler Icons"
+msgstr ""
+
+#: src/includes/Icons/Package/PackageLibrary.php:96
+msgid "Thin"
+msgstr ""
+
+#: src/includes/Rest/IconsController.php:189
+msgid "Unknown or disabled icon library."
+msgstr "Ukjent eller deaktivert ikonbibliotek."
+
+#: src/templates/admin/settings.php:227
+msgid "Use currentColor to inherit text color, or a CSS color."
+msgstr "Bruk currentColor for å arve tekstfargen, eller en CSS-farge."
+
+#: src/templates/admin/settings.php:133
+msgid ""
+"Used when an icon block or shortcode doesn’t set its own value. Style and "
+"stroke defaults are set per library below."
+msgstr ""
+
+#: src/templates/admin/settings.php:577
+msgid "View licenses"
+msgstr ""
+
+#. Name of the plugin
+#: src/includes/Admin/Menu.php:39 src/includes/Admin/Menu.php:40
+#: src/templates/admin/partials/header.php:36
+msgid "WP Icons"
+msgstr "WP Icons"
+
+#: bootstrap.php:13
+msgid ""
+"WP Icons is missing Composer dependencies. Run composer install in the "
+"plugin directory."
+msgstr ""
+"WP Icons mangler Composer-avhengigheter. Kjør «composer install» i plugin-"
+"mappen."
+
+#: src/templates/admin/partials/header.php:41
+msgid "WP Icons pages"
+msgstr ""
+
+#: src/templates/admin/settings.php:594
+msgid "You have unsaved changes"
+msgstr ""
