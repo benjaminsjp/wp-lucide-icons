@@ -1,6 +1,6 @@
 # WP Icons
 
-A WordPress plugin for placing icons from eight open-source icon libraries, including [Lucide](https://lucide.dev/), [Material Symbols](https://fonts.google.com/icons) (Outlined), Phosphor, Tabler Icons, and Simple Icons. Icons render as inline SVG. See [Icon libraries](#icon-libraries) for the full list, versions, and licenses.
+A WordPress plugin for placing icons from eight open-source icon libraries, including [Lucide](https://lucide.dev/), [Material Symbols](https://fonts.google.com/icons) (Outlined), [Phosphor](https://phosphoricons.com/), [Tabler Icons](https://tabler.io/icons), and [Simple Icons](https://simpleicons.org/). Icons render as inline SVG. See [Icon libraries](#icon-libraries) for the full list, versions, and licenses.
 
 The plugin is **WP Icons**. The repository and plugin folder are `wp-lucide-icons`.
 
