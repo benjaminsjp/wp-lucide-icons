@@ -35,7 +35,7 @@ All eight libraries ship with the plugin. Each catalog is generated from a pinne
 | [Ionicons](https://ionic.io/ionicons)                         | Bundled | `ionicons`         | `ionicons`                  | 8.1.0   | [MIT](https://github.com/ionic-team/ionicons/blob/main/LICENSE)                                                                                                            |
 | [Octicons](https://primer.style/octicons/)                    | Bundled | `octicons`         | `@primer/octicons`          | 19.42.0 | [MIT](https://github.com/primer/octicons/blob/main/LICENSE). GitHub logos follow GitHub's [logo guidelines](https://github.com/logos).                                     |
 
-Some icons are left out on purpose. Simple Icons whose own license is non-commercial, no-derivatives, AGPL, GPL-only, or custom are excluded, and so are the GitHub and Copilot logos in Octicons. The rules are in `config/icon-exclusions.json` (see `config/README.md`), and the license texts ship in `licenses/` and on **WP Icons → Settings → View licenses**.
+Some icons are left out on purpose. Simple Icons whose own license is non-commercial, no-derivatives, AGPL, GPL-only, or custom are excluded, and so are the GitHub and Copilot logos in Octicons. The rules are in `config/icon-exclusions.json` (see `config/README.md`), and the license texts ship in `licenses/` and on **Appearance → WP Icons → Settings → View licenses**.
 
 Each icon set is a third-party work under its own license. See [Trademarks & usage responsibility](#trademarks--usage-responsibility) before using brand icons.
 
@@ -74,7 +74,7 @@ Then activate the plugin from that directory. See [Development](#development) fo
 
 ### Block editor
 
-Insert the **Icon** block. Choose a library (or search all of them at once), pick an icon, then set size and color. Libraries with styles show a Weight or Style control, stroke-based styles show a stroke width, and Simple Icons can use each brand's own color.
+Insert the **Icon** block from the Media category. Choose a library (or search all of them at once), pick an icon, then set size and color. Libraries with styles show a Weight or Style control, stroke-based styles show a stroke width, and Simple Icons can use each brand's own color.
 
 To place an icon inside a paragraph, heading, or other text, use the **Insert icon** control on the block toolbar. Inline icons follow the surrounding text size and color.
 
@@ -102,13 +102,13 @@ Use the star **Insert icon** button on the TinyMCE toolbar. The same control app
 | `class`   | empty                                 | Extra class on the SVG                                               |
 | `title`   | empty                                 | Accessible title. Empty means the icon is hidden from assistive tech |
 
-Omitted attributes fall back to **WP Icons → Settings**.
+Omitted attributes fall back to **Appearance → WP Icons → Settings**.
 
 `[lucide_icon name="heart" size="24" color="currentColor" width="2"]` still works. It is a Lucide-only alias; prefer `[wp_icon]`.
 
 ## Admin
 
-WP Icons adds a top-level menu (capability `manage_options`):
+WP Icons adds **Appearance → WP Icons** (Library and Settings tabs, capability `edit_theme_options`):
 
 - **Library** — browse bundled icons, preview options, copy a shortcode
 - **Settings** — defaults, which libraries are enabled, and per-library source
@@ -118,7 +118,7 @@ Each library source is either **plugin** (the catalog shipped in the plugin) or 
 ### External requests and privacy
 
 - **Visitors:** icons are printed as inline SVG from the bundled or cached catalog. Front-end page views never contact npm, a CDN, or any other third party for icons.
-- **Settings page:** opening **WP Icons → Settings** asks `registry.npmjs.org` for the list of published versions of each library's package, to fill the **CDN version** list. The answer is cached for 12 hours. This happens even when every library uses the **plugin** source.
+- **Settings page:** opening **Appearance → WP Icons → Settings** asks `registry.npmjs.org` for the list of published versions of each library's package, to fill the **CDN version** list. The answer is cached for 12 hours. This happens even when every library uses the **plugin** source.
 - **CDN source:** when a library is enabled and set to **cdn**, the server downloads that package's metadata and tarball from the npm registry shortly after you save, then once a day. Nothing is downloaded for libraries on the **plugin** source.
 - These are server-to-server requests made with `wp_remote_get()`. The npm registry sees your server's IP address and the default WordPress user agent, which includes your site URL. No visitor data is sent.
 - Uninstalling the plugin deletes its settings, the cached catalogs in `wp-content/uploads/wp-icons/`, its transients, and its cron event.

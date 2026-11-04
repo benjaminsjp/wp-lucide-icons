@@ -48,12 +48,12 @@ License links are listed under "Third-party libraries & licenses" below.
 
 `[wp_icon library="material-symbols" name="favorite" size="24" color="currentColor"]`
 
-Attributes: `library`, `name`, `size`, `color` (a CSS color, or `brand` for Simple Icons), `stroke` (stroke-based styles), `weight` (Phosphor), `style` (Tabler, Heroicons, Ionicons), `class`, and `title`. Omitted attributes fall back to **WP Icons > Settings**. An empty `title` hides the icon from assistive technology.
+Attributes: `library`, `name`, `size`, `color` (a CSS color, or `brand` for Simple Icons), `stroke` (stroke-based styles), `weight` (Phosphor), `style` (Tabler, Heroicons, Ionicons), `class`, and `title`. Omitted attributes fall back to **Appearance > WP Icons > Settings**. An empty `title` hides the icon from assistive technology.
 
 = External requests and privacy =
 
 * **Visitors:** icons are printed as inline SVG from the bundled or cached catalog. Front-end page views never contact npm, a CDN, or any other third party for icons.
-* **Settings page:** opening **WP Icons > Settings** asks the npm registry (registry.npmjs.org) for the list of published versions of each library, to fill the "CDN version" list. The answer is cached for 12 hours. This happens even when every library uses the bundled source.
+* **Settings page:** opening **Appearance > WP Icons > Settings** asks the npm registry (registry.npmjs.org) for the list of published versions of each library, to fill the "CDN version" list. The answer is cached for 12 hours. This happens even when every library uses the bundled source.
 * **CDN source (optional):** when a library is enabled and set to the CDN source, your server downloads that package's metadata and archive from the npm registry shortly after you save, then once a day via WP-Cron. The catalog is stored in `wp-content/uploads/wp-icons/`.
 * These are server-to-server requests. The npm registry sees your server's IP address and the default WordPress user agent, which includes your site URL. No visitor data is sent.
 * npm privacy policy: https://docs.npmjs.com/policies/privacy
@@ -71,7 +71,7 @@ WP Icons makes it quick to use existing open-source icon sets inside WordPress. 
 
 1. In **Plugins > Add New > Upload Plugin**, upload `wp-lucide-icons.zip`, or extract it into `wp-content/plugins/wp-lucide-icons/`.
 2. Activate **WP Icons**.
-3. Optional: set defaults and enabled libraries in **WP Icons > Settings**.
+3. Optional: set defaults and enabled libraries in **Appearance > WP Icons > Settings**.
 4. Add the **Icon** block, use **Insert icon** on a text toolbar, or use the `[wp_icon]` shortcode.
 
 Requires WordPress 6.6 or newer and PHP 8.1 or newer. The release zip already contains everything the plugin needs.
@@ -88,7 +88,7 @@ It downloads a newer published version of a library from the npm registry in the
 
 = Which icon libraries are included? =
 
-Lucide, Material Symbols (Outlined), Simple Icons, Phosphor, Tabler Icons, Heroicons, Ionicons, and Octicons. You can turn each one on or off in **WP Icons > Settings**.
+Lucide, Material Symbols (Outlined), Simple Icons, Phosphor, Tabler Icons, Heroicons, Ionicons, and Octicons. You can turn each one on or off in **Appearance > WP Icons > Settings**.
 
 = Can I use brand icons freely? =
 
@@ -114,6 +114,11 @@ Its settings, cached catalogs in `wp-content/uploads/wp-icons/`, transients, and
 4. Settings after saving, with an inline CDN version error.
 
 == Changelog ==
+
+= Unreleased =
+* Changed: The Icon block now appears in the Media category.
+* Changed: WP Icons now lives under Appearance > WP Icons, with Library and Settings as tabs on one page. Old admin.php?page=wp-icons and admin.php?page=wp-icons-settings links redirect there.
+* Changed: Admin pages, settings saves, and the licenses link now require edit_theme_options instead of manage_options. A role that has manage_options but not edit_theme_options can no longer open them.
 
 = 2.0.0 - 2026-10-21 =
 * Added: Icon block with library, name, size, color, and Lucide stroke width.

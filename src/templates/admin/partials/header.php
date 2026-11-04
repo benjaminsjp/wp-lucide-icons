@@ -4,7 +4,6 @@
  */
 
 use WPIcons\Admin\Menu;
-use WPIcons\Admin\Settings;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -18,12 +17,12 @@ $wpicons_tabs = [
     'library' => [
         'label' => __('Library', 'wpicons'),
         'icon' => 'layout-grid',
-        'url' => admin_url('admin.php?page=' . Menu::SLUG),
+        'url' => Menu::url('library'),
     ],
     'settings' => [
         'label' => __('Settings', 'wpicons'),
         'icon' => 'settings',
-        'url' => admin_url('admin.php?page=' . Settings::PAGE),
+        'url' => Menu::url('settings'),
     ],
 ];
 

@@ -14,7 +14,10 @@ if (!defined('ABSPATH')) {
 class Settings
 {
     public const OPTION = 'wp_icons__settings';
+
+    /** Legacy admin.php slug, kept so old bookmarks can redirect. */
     public const PAGE = 'wp-icons-settings';
+
     public const GROUP = 'wp_icons';
 
     private Template $templates;
@@ -28,6 +31,7 @@ class Settings
     {
         add_action('admin_init', [$this, 'registerSetting']);
         add_action('update_option_' . self::OPTION, [$this, 'onUpdated'], 10, 2);
+        add_filter('option_page_capability_' . self::GROUP, static fn (): string => Menu::CAPABILITY);
         add_filter(
             'plugin_action_links_' . plugin_basename(WP_ICONS__FILE),
             [$this, 'pluginLinks']
@@ -343,8 +347,8 @@ class Settings
      */
     public function pluginLinks(array $links): array
     {
-        $library = admin_url('admin.php?page=wp-icons');
-        $settings = admin_url('admin.php?page=' . self::PAGE);
+        $library = Menu::url('library');
+        $settings = Menu::url('settings');
         array_unshift(
             $links,
             '<a href="' . esc_url($library) . '">' . esc_html__('Library', 'wpicons') . '</a>',
@@ -356,7 +360,7 @@ class Settings
 
     public function renderPage(): void
     {
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can(Menu::CAPABILITY)) {
             return;
         }
 
@@ -364,7 +368,7 @@ class Settings
         if ($view === 'licenses') {
             echo $this->templates->render('admin/licenses', [
                 'licenses' => self::licenseFiles(),
-                'back_url' => admin_url('admin.php?page=' . self::PAGE),
+                'back_url' => Menu::url('settings'),
             ]);
 
             return;
@@ -415,7 +419,7 @@ class Settings
 
     public static function licensesUrl(): string
     {
-        return admin_url('admin.php?page=' . self::PAGE . '&view=licenses');
+        return Menu::url('settings', ['view' => 'licenses']);
     }
 
     /**

@@ -6,6 +6,14 @@ The format for this changelog is based on [Keep a Changelog](https://keepachange
 and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).  
 Dates use the [ISO 8601 date format](https://www.iso.org/iso-8601-date-and-time-format.html) of `YYYY-MM-DD`.
 
+## [Unreleased]
+
+### Changed
+
+- The Icon block now appears in the Media category.
+- WP Icons now lives under **Appearance → WP Icons**, with Library and Settings as tabs on one page. Old `admin.php?page=wp-icons` and `admin.php?page=wp-icons-settings` links redirect there.
+- Admin pages, settings saves, and the licenses link now require `edit_theme_options` instead of `manage_options`. A role that has `manage_options` but not `edit_theme_options` can no longer open them.
+
 ## [2.0.0] - 2026-10-21
 
 ### Added

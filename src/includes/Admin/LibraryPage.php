@@ -16,7 +16,7 @@ class LibraryPage
 
     public function renderPage(): void
     {
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can(Menu::CAPABILITY)) {
             return;
         }
 

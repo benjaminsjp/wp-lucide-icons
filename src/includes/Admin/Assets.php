@@ -60,7 +60,7 @@ class Assets
             $this->enqueueTinyMcePicker();
         }
 
-        if ($hook !== 'toplevel_page_' . Menu::SLUG) {
+        if ($hook !== Menu::$hook || $this->currentTab() !== 'library') {
             return;
         }
 
@@ -181,7 +181,7 @@ class Assets
                 'stroke' => $settings['default_stroke'],
             ],
             'themeColors' => $this->themeColors(),
-            'licensesUrl' => current_user_can('manage_options') ? Settings::licensesUrl() : '',
+            'licensesUrl' => current_user_can(Menu::CAPABILITY) ? Settings::licensesUrl() : '',
         ];
     }
 
@@ -211,12 +211,20 @@ class Assets
 
     private function isPluginSettingsPage(string $hook): bool
     {
-        return $hook === 'wp-icons_page_' . Settings::PAGE;
+        return $hook === Menu::$hook && $this->currentTab() === 'settings';
     }
 
     private function shouldEnqueueAdminStyle(string $hook): bool
     {
-        return $this->isPluginSettingsPage($hook) || $hook === 'toplevel_page_' . Menu::SLUG;
+        return $hook === Menu::$hook;
+    }
+
+    private function currentTab(): string
+    {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only tab routing.
+        $tab = isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : 'library';
+
+        return $tab === 'settings' ? 'settings' : 'library';
     }
 
     private function assetUrl(string $relative): string

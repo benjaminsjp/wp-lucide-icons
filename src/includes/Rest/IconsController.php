@@ -2,6 +2,7 @@
 
 namespace WPIcons\Rest;
 
+use WPIcons\Admin\Menu;
 use WPIcons\Admin\Settings;
 use WPIcons\Icons\Cdn\CdnCatalog;
 use WPIcons\Icons\CatalogStore;
@@ -114,7 +115,7 @@ class IconsController
 
     public function canRead(): bool
     {
-        return current_user_can('edit_posts') || current_user_can('manage_options');
+        return current_user_can('edit_posts') || current_user_can(Menu::CAPABILITY);
     }
 
     public function libraries(): WP_REST_Response
@@ -176,7 +177,7 @@ class IconsController
                 'color' => $settings['default_color'],
                 'stroke' => $settings['default_stroke'],
             ],
-            'licensesUrl' => current_user_can('manage_options') ? Settings::licensesUrl() : '',
+            'licensesUrl' => current_user_can(Menu::CAPABILITY) ? Settings::licensesUrl() : '',
         ]);
     }
 

@@ -3,11 +3,13 @@
  * Read-only list of the license texts shipped in the plugin's licenses/ folder.
  */
 
+use WPIcons\Admin\Menu;
+
 if (!defined('ABSPATH')) {
     exit;
 }
 
-if (!current_user_can('manage_options')) {
+if (!current_user_can(Menu::CAPABILITY)) {
     return;
 }
 

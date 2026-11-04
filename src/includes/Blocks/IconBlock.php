@@ -13,23 +13,7 @@ class IconBlock
 {
     public function register(): void
     {
-        add_filter('block_categories_all', [$this, 'category']);
         add_action('init', [$this, 'registerBlock']);
-    }
-
-    /**
-     * @param array<int, array<string, mixed>> $categories
-     * @return array<int, array<string, mixed>>
-     */
-    public function category(array $categories): array
-    {
-        array_unshift($categories, [
-            'slug' => 'wpicons',
-            'title' => __('WP Icons', 'wpicons'),
-            'icon' => 'star-filled',
-        ]);
-
-        return $categories;
     }
 
     public function registerBlock(): void
