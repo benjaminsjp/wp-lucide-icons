@@ -244,7 +244,7 @@ const picked = await wpIcons.openPicker({ value: "lucide:check" });
 
 `wpIcons.Icon` is a React component with props `icon`, `size`, `color`, `stroke`, `title`, and `className`. `icon` is the same `library:name[:variant]` reference. `wpIcons.parseRef()` splits a reference into `library`, `name`, and `variant`. `openPicker({ value, libraries })` resolves with `{ library, name, variant, size, color, stroke, title }`, or `null` when the dialog is closed. `libraries` is an optional list of library ids to show.
 
-### Lower-level (still supported)
+### Lower-level
 
 ```php
 use WPIcons\Icons\Renderer;
