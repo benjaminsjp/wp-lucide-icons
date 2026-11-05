@@ -1,0 +1,8 @@
+@use "config";
+
+@function createProperty($property, $includePrefix: true) {
+    $prefix: if(
+        sass($includePrefix): config.prefix() ; else: "",
+    );
+    @return --#{$prefix}#{$property};
+}

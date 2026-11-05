@@ -1,3 +1,8 @@
+.cursor
+
 node_modules
-*.zip
 releases
+vendor
+build
+
+*.zip

@@ -1,27 +1,51 @@
 {
-    "name": "wp-lucide-icons",
-    "version": "1.0.0",
-    "main": "index.js",
-    "scripts": {
-        "sass": "sass -w scss:css --style compressed",
-        "publish": "node publish.js"
-    },
+    "name": "wp-icons",
+    "description": "Adds icon elements to place on pages, uses icons from Lucide Icons, Material Icons and other various icon libraries. Integrates with some WordPress themes like Flatsome.",
+    "version": "2.0.0",
+    "author": "Kim Lukas Myrvold",
+    "keywords": [
+        "wordpress plugin",
+        "lucide icons",
+        "material icons"
+    ],
+    "license": "GPLv2 or later",
+    "browserslist": [
+        "> 1%",
+        "last 2 versions",
+        "not dead"
+    ],
+    "homepage": "https://github.com/kimlukasmyrvold/wp-lucide-icons#readme",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/kimlukasmyrvold/wp-lucide-icons.git"
     },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "type": "commonjs",
     "bugs": {
         "url": "https://github.com/kimlukasmyrvold/wp-lucide-icons/issues"
     },
-    "homepage": "https://github.com/kimlukasmyrvold/wp-lucide-icons#readme",
-    "description": "",
+    "scripts": {
+        "sass": "node node_modules/sass/sass.js -w src/assets/scss:src/assets/css --style compressed --no-source-map",
+        "sass:build": "node node_modules/sass/sass.js src/assets/scss:src/assets/css --style compressed --no-source-map",
+        "build": "node node_modules/@wordpress/scripts/bin/wp-scripts.js build",
+        "start": "node node_modules/@wordpress/scripts/bin/wp-scripts.js start",
+        "publish": "node publish.mjs wp-lucide-icons",
+        "sync-icons": "node scripts/sync-packages.js"
+    },
     "dependencies": {
-        "archiver": "^7.0.1",
-        "fs-extra": "^11.3.0",
-        "sass": "^1.83.0"
+        "archiver": "^8.0.0",
+        "fs-extra": "^11.4.1",
+        "ignore": "^7.0.14",
+        "sass": "^1.107.1"
+    },
+    "devDependencies": {
+        "@material-symbols/svg-400": "0.48.2",
+        "@phosphor-icons/core": "2.1.1",
+        "@primer/octicons": "19.42.0",
+        "@tabler/icons": "3.50.0",
+        "@wordpress/scripts": "^37.0.0",
+        "heroicons": "2.2.0",
+        "ionicons": "8.1.0",
+        "lucide-static": "1.67.0",
+        "simple-icons": "16.36.0",
+        "tar": "^7.5.22"
     }
 }

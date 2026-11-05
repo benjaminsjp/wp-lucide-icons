@@ -1,0 +1,153 @@
+@use "sass:map";
+@use "functions";
+@use "config";
+@use "mixins";
+
+$default: light;
+$themes: (
+    $default: (
+        background: oklch(98.511% 0.00011 271.152),
+        foreground: oklch(20.463% 0.00002 271.152),
+        primary: oklch(70.542% 0.14633 296.12),
+        primary-foreground: #14101f, // Text on lavender (primary) is #14101F in both themes.
+        secondary: oklch(0.95 0.02 275.64),
+        secondary-foreground: oklch(0.2 0 0),
+        accent: oklch(100% 0.00011 271.152),
+        accent-foreground: oklch(0% 0 0),
+        muted: oklch(0.71 0.02 261.75),
+        muted-foreground: oklch(36.002% 0.00004 271.152),
+        card: oklch(1 0 0),
+        card-foreground: oklch(20.463% 0.00002 271.152),
+        success: oklch(74.267% 0.23534 142.761),
+        destructive: oklch(62.793% 0.25768 29.223),
+        border: oklch(0.93 0.01 264.53),
+        control-border: oklch(0.45 0.02 271),
+        input: oklch(0.98 0 247.84),
+        ring: oklch(70.542% 0.14633 296.12),
+        sidebar: oklch(0.95 0.02 275.64),
+    ),
+    dark: (
+        background: oklch(21.825% 0.02359 295.836),
+        foreground: oklch(100% 0.00011 271.152),
+        primary: oklch(70.542% 0.14633 296.12),
+        primary-foreground: #14101f,
+        secondary: oklch(29.313% 0.00003 271.152),
+        secondary-foreground: oklch(100% 0.00011 271.152),
+        accent: oklch(87.762% 0.06474 290.831),
+        accent-foreground: oklch(20.891% 0.06623 292.952),
+        muted: oklch(29.313% 0.00003 271.152),
+        muted-foreground: oklch(90.67% 0.0001 271.152),
+        card: oklch(25.856% 0.0265 297.597),
+        card-foreground: oklch(100% 0.00011 271.152),
+        success: oklch(74.267% 0.23534 142.761),
+        destructive: oklch(62.793% 0.25768 29.223),
+        border: oklch(31.668% 0.03043 295.379),
+        control-border: oklch(82.032% 0.00009 271.152),
+        input: oklch(21.881% 0.02547 294.779),
+        ring: oklch(87.762% 0.06474 290.831),
+        sidebar: oklch(25.856% 0.0265 297.597),
+    ),
+);
+
+$base: (
+    radius-sm: 0.25rem,
+    radius-md: 0.5rem,
+    radius-base: 0.625rem,
+    radius-xl: 1.25rem,
+    radius-2xl: 1.875rem,
+    radius-3xl: 3.125rem,
+
+    spacing: 0.25rem,
+
+    text-xs: 0.75rem,
+    text-xs--line-height: calc(1 / 0.75),
+    text-sm: 0.875rem,
+    text-sm--line-height: calc(1.25 / 0.875),
+    text-base: 1rem,
+    text-base--line-height: 1.5,
+    text-lg: 1.125rem,
+    text-lg--line-height: calc(1.75 / 1.125),
+    text-xl: 1.25rem,
+    text-xl--line-height: calc(1.75 / 1.25),
+    text-2xl: 1.5rem,
+    text-2xl--line-height: calc(2 / 1.5),
+    text-3xl: 1.875rem,
+    text-3xl--line-height: 1.2,
+    text-4xl: 2.25rem,
+    text-4xl--line-height: calc(2.5 / 2.25),
+    text-5xl: 3rem,
+    text-5xl--line-height: 1,
+    text-6xl: 3.75rem,
+    text-6xl--line-height: 1,
+    text-7xl: 4.875rem,
+    text-7xl--line-height: 1,
+    text-8xl: 6rem,
+    text-8xl--line-height: 1,
+    text-9xl: 8rem,
+    text-9xl--line-height: 1,
+
+    font-weight-light: 200,
+    font-weight-normal: 400,
+    font-weight-medium: 500,
+    font-weight-semibold: 600,
+    font-weight-bold: 700,
+
+    tracking-tighter: -0.05em,
+    tracking-tight: -0.025em,
+    tracking-widest: 0.1em,
+    leading-tight: 1.25,
+    leading-snug: 1.375,
+    leading-normal: 1.5,
+    leading-relaxed: 1.625,
+
+    blur-xs: 4px,
+    blur-base: 8px,
+    blur-lg: 16px,
+    blur-2xl: 32px,
+    blur-3xl: 64px,
+
+    aspect-video: "16 / 9",
+);
+
+.#{config.$prefix} {
+    @include mixins.generateProperties($base);
+
+    @mixin themeWrap($theme) {
+        @if $theme == $default {
+            @content;
+        }
+        &[theme="#{$theme}"] {
+            @content;
+        }
+        @media (prefers-color-scheme: #{$theme}) {
+            @content;
+        }
+    }
+
+    @each $theme, $colors in $themes {
+        @include themeWrap($theme) {
+            color-scheme: #{$theme};
+            @include mixins.generateProperties($colors);
+        }
+    }
+}
+
+@function color($theme, $token) {
+    @return map.get($themes, $theme, $token);
+}
+
+@function getCSSProp($token) {
+    @return functions.createProperty($token);
+}
+
+@function getCSSVar($token, $fallback: false) {
+    $prop: functions.createProperty($token);
+    @if $fallback {
+        @return var($prop, $fallback);
+    }
+    @return var($prop);
+}
+
+@function base($token) {
+    @return map.get($base, $token);
+}

@@ -1,0 +1,66 @@
+@use "config";
+@use "themes";
+
+@layer base {
+    .#{config.$prefix} {
+        *,
+        *::after,
+        *::before {
+            box-sizing: border-box;
+            border: 0 solid;
+            margin: 0;
+            padding: 0;
+        }
+
+        * {
+            border-color: themes.getCSSVar(border);
+            outline-color: themes.getCSSVar(ring);
+
+            @supports (color: color-mix(in lab, red, red)) {
+                outline-color: color-mix(
+                    in oklab,
+                    themes.getCSSVar(ring) 50%,
+                    transparent
+                );
+            }
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        p,
+        label,
+        span,
+        strong,
+        b,
+        small,
+        em,
+        code,
+        pre,
+        section,
+        article,
+        main,
+        header,
+        footer,
+        div,
+        a,
+        input,
+        button,
+        select,
+        textarea,
+        table,
+        li,
+        td,
+        th,
+        tr,
+        legend,
+        label,
+        fieldset {
+            margin: 0;
+            padding: 0;
+        }
+    }
+}

@@ -1,0 +1,208 @@
+@use "lib/config";
+@use "lib/themes";
+
+.#{config.$prefix} {
+    --wp-admin-theme-color: #{themes.getCSSVar(primary)};
+    --wp-admin-theme-color-darker-10: #{themes.getCSSVar(primary)};
+    --wp-admin-theme-color-darker-20: #{themes.getCSSVar(primary)};
+    --wp-components-color-accent: #{themes.getCSSVar(primary)};
+    --wp-components-color-accent-darker-10: #{themes.getCSSVar(primary)};
+    --wp-components-color-accent-darker-20: #{themes.getCSSVar(primary)};
+    --wp-components-color-foreground: #{themes.getCSSVar(foreground)};
+    --wp-components-color-background: #{themes.getCSSVar(background)};
+    accent-color: themes.getCSSVar(primary);
+
+    .components-button.is-primary {
+        min-height: 2.75rem;
+        background: themes.getCSSVar(primary);
+        color: themes.getCSSVar(primary-foreground);
+        border-color: themes.getCSSVar(primary);
+        box-shadow: none;
+
+        &:hover:not(:disabled),
+        &:active:not(:disabled) {
+            background: color-mix(in srgb, themes.getCSSVar(primary) 86%, themes.getCSSVar(foreground));
+            color: themes.getCSSVar(primary-foreground);
+            border-color: themes.getCSSVar(primary);
+        }
+
+        &:focus:not(:disabled),
+        &:focus-visible {
+            outline: 2px solid themes.getCSSVar(ring);
+            outline-offset: 2px;
+            box-shadow: none;
+        }
+    }
+
+    .components-button.is-secondary {
+        min-height: 2.75rem;
+        background: themes.getCSSVar(secondary);
+        color: themes.getCSSVar(secondary-foreground);
+        box-shadow: inset 0 0 0 1px themes.getCSSVar(control-border);
+
+        &:hover:not(:disabled),
+        &:active:not(:disabled) {
+            background: color-mix(in srgb, themes.getCSSVar(secondary) 86%, themes.getCSSVar(foreground));
+            color: themes.getCSSVar(secondary-foreground);
+            box-shadow: inset 0 0 0 1px themes.getCSSVar(control-border);
+        }
+
+        &:focus:not(:disabled),
+        &:focus-visible {
+            outline: 2px solid themes.getCSSVar(ring);
+            outline-offset: 2px;
+            box-shadow: inset 0 0 0 1px themes.getCSSVar(control-border);
+        }
+    }
+
+    .components-button.is-tertiary {
+        min-height: 2.75rem;
+        background: transparent;
+        color: themes.getCSSVar(foreground);
+        box-shadow: none;
+
+        &:hover:not(:disabled) {
+            background: themes.getCSSVar(secondary);
+            color: themes.getCSSVar(secondary-foreground);
+        }
+
+        &:focus:not(:disabled),
+        &:focus-visible {
+            outline: 2px solid themes.getCSSVar(ring);
+            outline-offset: 2px;
+            box-shadow: none;
+        }
+    }
+
+    .components-base-control__label,
+    .components-toggle-control__label {
+        color: themes.getCSSVar(foreground);
+    }
+
+    .components-base-control__help {
+        color: themes.getCSSVar(muted-foreground);
+    }
+
+    .components-base-control {
+        margin-bottom: calc(#{themes.base(spacing)} * 3);
+    }
+
+    .components-text-control__input,
+    .components-textarea-control__input,
+    .components-select-control__input {
+        min-height: 2.75rem;
+        background: themes.getCSSVar(input);
+        color: themes.getCSSVar(foreground);
+        border-color: themes.getCSSVar(control-border);
+        border-radius: themes.base(radius-sm);
+    }
+
+    .components-input-control__container {
+        background: themes.getCSSVar(input);
+        border-radius: themes.base(radius-sm);
+    }
+
+    .components-input-control__input {
+        position: relative;
+        z-index: 1;
+        min-height: 2.75rem;
+        background: transparent;
+        color: themes.getCSSVar(foreground);
+    }
+
+    .components-input-control__backdrop {
+        background: transparent;
+        border-color: themes.getCSSVar(control-border);
+        box-shadow: none;
+        pointer-events: none;
+    }
+
+    .components-input-control__container:focus-within .components-input-control__backdrop {
+        border-color: themes.getCSSVar(primary);
+        box-shadow: 0 0 0 2px themes.getCSSVar(ring);
+    }
+
+    .components-text-control__input:focus,
+    .components-textarea-control__input:focus,
+    .components-select-control__input:focus {
+        border-color: themes.getCSSVar(primary);
+        box-shadow: 0 0 0 2px themes.getCSSVar(ring);
+        outline: none;
+    }
+
+    .components-form-toggle .components-form-toggle__track {
+        background: themes.getCSSVar(input);
+        border-color: themes.getCSSVar(control-border);
+    }
+
+    .components-form-toggle.is-checked .components-form-toggle__track {
+        background: themes.getCSSVar(primary);
+        border-color: themes.getCSSVar(primary);
+    }
+
+    .components-form-toggle .components-form-toggle__thumb {
+        background: themes.getCSSVar(muted-foreground);
+    }
+
+    .components-form-toggle.is-checked .components-form-toggle__thumb {
+        background: themes.getCSSVar(primary-foreground);
+        border-color: themes.getCSSVar(primary-foreground);
+    }
+
+    .components-range-control__slider,
+    .components-range-control input[type="range"] {
+        accent-color: themes.getCSSVar(primary);
+    }
+
+    .components-spinner {
+        border-color: themes.getCSSVar(control-border);
+        border-left-color: themes.getCSSVar(primary);
+    }
+}
+
+.#{config.$prefix}__style {
+    display: flex;
+    flex-direction: column;
+    gap: calc(#{themes.base(spacing)} * 3);
+
+    .components-base-control {
+        margin-bottom: 0;
+    }
+}
+
+.#{config.$prefix}__style-color {
+    display: flex;
+    flex-direction: column;
+    gap: calc(#{themes.base(spacing)} * 2);
+}
+
+.#{config.$prefix}__swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(#{themes.base(spacing)} * 2);
+}
+
+.#{config.$prefix}__swatch {
+    box-sizing: border-box;
+    width: 1.25rem;
+    height: 1.25rem;
+    padding: 0;
+    border: 1px solid themes.getCSSVar(border);
+    border-radius: 999px;
+    appearance: none;
+    background: none;
+    cursor: pointer;
+    flex: none;
+
+    &:hover,
+    &:focus-visible {
+        outline: 2px solid themes.getCSSVar(primary);
+        outline-offset: 1px;
+    }
+
+    &.is-selected {
+        outline: 2px solid themes.getCSSVar(primary);
+        outline-offset: 1px;
+        border-color: themes.getCSSVar(primary);
+    }
+}

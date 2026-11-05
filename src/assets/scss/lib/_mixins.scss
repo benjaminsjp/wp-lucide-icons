@@ -1,0 +1,8 @@
+@use "config";
+@use "functions";
+
+@mixin generateProperties($array, $includePrefix: true) {
+    @each $property, $value in $array {
+        #{functions.createProperty($property, $includePrefix)}: #{$value};
+    }
+}

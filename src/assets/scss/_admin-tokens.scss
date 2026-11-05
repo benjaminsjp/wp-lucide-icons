@@ -1,0 +1,75 @@
+@use "sass:map";
+@use "lib/themes";
+
+// Semantic roles for the admin pages (Library + Settings), mapped onto the plugin's own theme
+// variables from lib/_themes.scss (--wpicons-background, --wpicons-foreground, ...). Those switch
+// between the light and dark palettes via prefers-color-scheme (or a [theme] attribute), so the
+// admin pages follow the user's preferred color scheme exactly like the icon picker does.
+
+@function v($token) {
+    @return themes.getCSSVar($token);
+}
+
+@function mix($a, $amount, $b) {
+    @return color-mix(in oklch, #{$a} #{$amount}, #{$b});
+}
+
+$roles: (
+    // Surfaces
+    bg: v(background),
+    card: v(card),
+    row: v(background),
+    inset: v(background),
+    input: v(input),
+    overlay: mix(v(card), 85%, transparent),
+
+    // Lines
+    border: v(border),
+    field-border: mix(v(control-border), 62%, v(border)),
+    control-border: v(control-border),
+    dashed: mix(v(control-border), 55%, v(card)),
+    grid-line: mix(v(foreground), 5%, transparent),
+
+    // Text
+    foreground: v(foreground),
+    muted-foreground: v(muted-foreground),
+    helper: mix(v(muted-foreground), 80%, v(card)),
+    accent-text: mix(v(primary), 60%, v(foreground)),
+
+    // Brand / states
+    primary: v(primary),
+    primary-foreground: v(primary-foreground),
+    primary-hover: mix(v(primary), 88%, v(foreground)),
+    primary-soft: mix(v(primary), 14%, transparent),
+    primary-softer: mix(v(primary), 10%, transparent),
+    primary-border: mix(v(primary), 40%, transparent),
+    focus-glow: mix(v(primary), 30%, transparent),
+    accent: v(ring),
+    secondary: v(secondary),
+    success: v(success),
+    destructive: v(destructive),
+    error-text: mix(v(destructive), 78%, v(foreground)),
+    danger-glow: mix(v(destructive), 20%, transparent),
+    // The theme has no warning token; this amber reads on both palettes (icon/stripe/dot only, never text).
+    warning: oklch(80.5% 0.145 75),
+
+    // Interactive surfaces
+    hover: mix(v(foreground), 6%, transparent),
+    hover-strong: mix(v(foreground), 12%, transparent),
+    subtle: mix(v(foreground), 4%, transparent),
+    toggle-off: v(input),
+    toggle-off-border: mix(v(control-border), 75%, v(card)),
+    track: mix(v(control-border), 45%, v(card)),
+    button-secondary: v(card),
+    disabled: v(secondary),
+    disabled-foreground: mix(v(muted-foreground), 55%, v(secondary)),
+    shadow: rgb(0 0 0 / 0.18),
+);
+
+@function t($role) {
+    @if not map.has-key($roles, $role) {
+        @error "Unknown admin color role: #{$role}";
+    }
+
+    @return map.get($roles, $role);
+}

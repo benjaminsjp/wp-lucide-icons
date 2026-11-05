@@ -1,0 +1,30 @@
+{
+    "$comment": "Icons that WP Icons must never bundle or download. Read by scripts/sync-packages.js (bundled catalogs, at build time) and by src/includes/Icons/Exclusions.php (CDN catalogs, when a site downloads a newer package). Edit this file, then run `pnpm sync-icons` and rebuild. See config/README.md.",
+    "libraries": {
+        "simple-icons": {
+            "reason": "Simple Icons is CC0, but some logos carry their own license in data/simple-icons.json. Logos whose license is non-commercial (NC), no-derivatives (ND), GPL/AGPL-family (not compatible with redistributing them in arbitrary sites and themes) or a custom/trademark-policy license are excluded. Logos with no license field are CC0. Permissive licenses (MIT, Apache-2.0, BSD, MPL-2.0, CC-BY, CC-BY-SA, Unlicense) are kept and listed in licenses/simple-icons-icon-licenses.md for attribution.",
+            "excludeLicenseTypes": [
+                "-NC",
+                "-ND",
+                "^AGPL-",
+                "^GPL-",
+                "^LGPL-",
+                "^custom$"
+            ],
+            "excludeNames": [],
+            "excludePrefixes": []
+        },
+        "octicons": {
+            "reason": "GitHub's logos and Copilot marks are trademarks that GitHub's logo policy does not allow in third-party products; Octicons' MIT license does not grant trademark rights.",
+            "excludeNames": [
+                "mark-github",
+                "logo-github",
+                "logo-gist",
+                "lockup-github"
+            ],
+            "excludePrefixes": [
+                "copilot"
+            ]
+        }
+    }
+}

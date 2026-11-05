@@ -1,0 +1,902 @@
+@use "lib/config";
+@use "lib/themes";
+
+.#{config.$prefix}__picker-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: rgb(8 6 18 / 0.72);
+}
+
+.#{config.$prefix} {
+    &__picker {
+        display: flex;
+        flex-direction: column;
+        gap: calc(#{themes.base(spacing)} * 3);
+
+        &__toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: calc(#{themes.base(spacing)} * 3);
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        &__tabs {
+            display: flex;
+            gap: calc(#{themes.base(spacing)} * 2);
+            flex-wrap: wrap;
+        }
+
+        &__tab {
+            display: inline-flex;
+            align-items: center;
+            gap: calc(#{themes.base(spacing)} * 1.5);
+            min-height: 2.75rem;
+            border: 1px solid themes.getCSSVar(control-border);
+            background: themes.getCSSVar(card);
+            color: themes.getCSSVar(card-foreground);
+            border-radius: themes.base(radius-sm);
+            padding: calc(#{themes.base(spacing)} * 1.5)
+                calc(#{themes.base(spacing)} * 2.5);
+            cursor: pointer;
+
+            &.is-active {
+                background: themes.getCSSVar(primary);
+                border-color: themes.getCSSVar(primary);
+                color: themes.getCSSVar(primary-foreground);
+
+                .#{config.$prefix}__picker__count {
+                    color: inherit;
+                }
+            }
+
+            &:disabled {
+                cursor: wait;
+            }
+        }
+
+        &__count {
+            color: themes.getCSSVar(muted-foreground);
+            font-size: themes.base(text-xs);
+        }
+
+        &__search {
+            display: flex;
+        }
+
+        &__search input {
+            min-width: 13.75rem;
+            min-height: auto;
+            border: 1px solid themes.getCSSVar(border);
+            background: themes.getCSSVar(input);
+            color: themes.getCSSVar(foreground);
+            border-radius: themes.base(radius-sm);
+            padding: calc(#{themes.base(spacing)} * 1.5)
+                calc(#{themes.base(spacing)} * 2);
+        }
+
+        &__meta,
+        &__status {
+            margin: 0;
+            color: themes.getCSSVar(muted-foreground);
+            font-size: themes.base(text-sm);
+        }
+
+        &__grid {
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+            gap: calc(#{themes.base(spacing)} * 2);
+            overflow: visible;
+
+            &.is-loading {
+                min-height: 18rem;
+
+                .#{config.$prefix}__picker__item {
+                    opacity: 0.35;
+                }
+            }
+        }
+
+        &__loading {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: calc(#{themes.base(spacing)} * 2);
+            background: color-mix(
+                in srgb,
+                themes.getCSSVar(background) 82%,
+                transparent
+            );
+            color: themes.getCSSVar(foreground);
+        }
+
+        &__more {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: center;
+            padding: calc(#{themes.base(spacing)} * 2);
+        }
+
+        &__item {
+            display: grid;
+            place-items: center;
+            border: 1px solid themes.getCSSVar(control-border);
+            background: themes.getCSSVar(card);
+            color: themes.getCSSVar(card-foreground);
+            border-radius: themes.base(radius-md);
+            cursor: pointer;
+            aspect-ratio: 1 / 1;
+
+            &:hover {
+                background: themes.getCSSVar(card) !important;
+                border-color: themes.getCSSVar(control-border) !important;
+            }
+
+            &.is-selected {
+                background: themes.getCSSVar(secondary) !important;
+                border-color: themes.getCSSVar(primary) !important;
+            }
+        }
+
+        &__glyph {
+            display: flex;
+            width: 1.75rem;
+            height: 1.75rem;
+            align-items: center;
+            justify-content: center;
+            color: themes.getCSSVar(foreground);
+
+            svg {
+                width: 1.5rem;
+                height: 1.5rem;
+            }
+        }
+
+        &__name {
+            font-size: themes.base(text-xs);
+            line-height: themes.base(leading-tight);
+            text-align: center;
+            word-break: break-word;
+        }
+
+        &__pager {
+            display: flex;
+            gap: calc(#{themes.base(spacing)} * 3);
+            align-items: center;
+            justify-content: center;
+            color: themes.getCSSVar(foreground);
+
+            button {
+                background: themes.getCSSVar(card);
+                color: themes.getCSSVar(card-foreground);
+                min-height: 2.75rem;
+                border: 1px solid themes.getCSSVar(control-border);
+                border-radius: themes.base(radius-sm);
+                padding: calc(#{themes.base(spacing)} * 1.5)
+                    calc(#{themes.base(spacing)} * 2.5);
+                cursor: pointer;
+
+                &:hover:not(:disabled) {
+                    border-color: themes.getCSSVar(primary);
+                    color: themes.getCSSVar(card-foreground);
+                }
+
+                &:focus-visible {
+                    outline: 2px solid themes.getCSSVar(ring);
+                    outline-offset: 1px;
+                }
+
+                &:disabled {
+                    background: themes.getCSSVar(card);
+                    color: themes.getCSSVar(muted-foreground);
+                    opacity: 1;
+                    cursor: default;
+                }
+            }
+        }
+
+        &__style {
+            display: flex;
+            flex-direction: column;
+            gap: calc(#{themes.base(spacing)} * 3);
+            padding-top: calc(#{themes.base(spacing)} * 3);
+            border-top: 1px solid themes.getCSSVar(border);
+
+            .components-base-control {
+                margin-bottom: 0;
+            }
+        }
+
+        &__error,
+        &__empty {
+            margin: 0;
+            grid-column: 1 / -1;
+            color: themes.getCSSVar(muted-foreground);
+        }
+
+        &--dialog {
+            flex: 1 1 auto;
+            min-height: 0;
+            gap: calc(#{themes.base(spacing)} * 3);
+
+            .#{config.$prefix}__picker__toolbar {
+                flex-direction: column;
+                align-items: stretch;
+                justify-content: flex-start;
+                gap: calc(#{themes.base(spacing)} * 3);
+            }
+
+            .#{config.$prefix}__picker__search {
+                width: 100%;
+                display: flex;
+            }
+
+            .#{config.$prefix}__picker__search input {
+                width: 100%;
+                flex: 1 1 auto;
+                min-width: 0;
+                min-height: auto;
+                padding-block: 0.375rem;
+                padding-inline: 0.875rem;
+                border: 1px solid themes.getCSSVar(border);
+                background: themes.getCSSVar(input);
+                border-radius: themes.base(radius-base);
+
+                &:focus,
+                &:focus-visible {
+                    outline: 2px solid themes.getCSSVar(primary);
+                    outline-offset: 1px;
+                    border-color: themes.getCSSVar(primary);
+                    box-shadow: none;
+                }
+            }
+
+            .#{config.$prefix}__picker__tab {
+                min-height: 2.25rem;
+                border-radius: 999px;
+                background: transparent;
+                color: themes.getCSSVar(foreground);
+            }
+
+            .#{config.$prefix}__picker__tab.is-active {
+                background: themes.getCSSVar(primary);
+                border-color: themes.getCSSVar(primary);
+                color: themes.getCSSVar(primary-foreground);
+            }
+
+            .#{config.$prefix}__picker__grid {
+                flex: 1 1 auto;
+                min-height: 12rem;
+                align-content: start;
+                grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+                gap: calc(#{themes.base(spacing)} * 1);
+                overflow: auto;
+                scrollbar-width: thin;
+                scrollbar-color: #{themes.getCSSVar(control-border)} transparent;
+
+                &::-webkit-scrollbar {
+                    width: 8px;
+                    height: 8px;
+                }
+
+                &::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+
+                &::-webkit-scrollbar-thumb {
+                    background: themes.getCSSVar(control-border);
+                    border-radius: 999px;
+                }
+
+                &::-webkit-scrollbar-thumb:hover {
+                    background: themes.getCSSVar(border);
+                }
+            }
+
+            .#{config.$prefix}__picker__item {
+                gap: 0;
+                padding: calc(#{themes.base(spacing)} * 2);
+                border-color: transparent;
+                background: transparent;
+
+                &:hover {
+                    background: themes.getCSSVar(sidebar) !important;
+                    border-color: themes.getCSSVar(border) !important;
+                }
+
+                &.is-selected {
+                    // Primary tint + 2px primary ring instead of the dark-grey secondary fill, so the
+                    // selection stays obvious and dark brand icons stay readable.
+                    border-color: themes.getCSSVar(primary) !important;
+                    background: color-mix(
+                        in srgb,
+                        #{themes.getCSSVar(primary)} 14%,
+                        transparent
+                    ) !important;
+                    box-shadow: inset 0 0 0 1px themes.getCSSVar(primary);
+                }
+            }
+
+            .#{config.$prefix}__picker__name {
+                display: none;
+            }
+
+            .#{config.$prefix}__picker__status {
+                flex: none;
+            }
+        }
+    }
+
+    &__picker-dialog {
+        display: flex;
+        flex-direction: column;
+        width: min(56rem, calc(100vw - 4rem));
+        height: min(42rem, calc(100vh - 4rem));
+        overflow: hidden;
+        border-radius: themes.base(radius-xl);
+        background: themes.getCSSVar(background);
+        color: themes.getCSSVar(foreground);
+        box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 0.45);
+
+        &.#{config.$prefix} button.components-button {
+            box-sizing: border-box;
+            padding-block: 0.375rem;
+            padding-inline: 0.875rem;
+            line-height: 1.4;
+        }
+
+        &.#{config.$prefix} .components-form-toggle {
+            position: relative;
+            display: inline-block;
+            flex: none;
+            width: 2.25rem;
+            height: 1.25rem;
+        }
+
+        &.#{config.$prefix} .components-form-toggle__input {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            opacity: 0;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        &.#{config.$prefix} .components-form-toggle__track {
+            display: block;
+            box-sizing: border-box;
+            width: 2.25rem;
+            height: 1.25rem;
+            border: 1px solid themes.getCSSVar(control-border);
+            border-radius: 999px;
+            background: themes.getCSSVar(input);
+        }
+
+        &.#{config.$prefix}
+            .components-form-toggle.is-checked
+            .components-form-toggle__track {
+            background: themes.getCSSVar(primary);
+            border-color: themes.getCSSVar(primary);
+        }
+
+        &.#{config.$prefix} .components-form-toggle__thumb {
+            position: absolute;
+            top: 0.1875rem;
+            left: 0.1875rem;
+            box-sizing: border-box;
+            width: 0.875rem;
+            height: 0.875rem;
+            border-radius: 999px;
+            background: themes.getCSSVar(muted-foreground);
+            transition: transform 0.15s ease;
+        }
+
+        &.#{config.$prefix}
+            .components-form-toggle.is-checked
+            .components-form-toggle__thumb {
+            background: themes.getCSSVar(primary-foreground);
+            transform: translateX(1rem);
+        }
+
+        &__header,
+        &__footer {
+            display: flex;
+            flex: none;
+            align-items: center;
+            gap: calc(#{themes.base(spacing)} * 3);
+        }
+
+        &__header {
+            justify-content: space-between;
+            padding: calc(#{themes.base(spacing)} * 5)
+                calc(#{themes.base(spacing)} * 6)
+                calc(#{themes.base(spacing)} * 4);
+        }
+
+        &__title {
+            color: themes.getCSSVar(foreground);
+            font-size: themes.base(text-xl);
+            font-weight: themes.base(font-weight-semibold);
+            line-height: themes.base(leading-tight);
+        }
+
+        &__close {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.25rem;
+            height: 2.25rem;
+            border: 0;
+            border-radius: themes.base(radius-sm);
+            background: transparent;
+            box-shadow: none;
+            color: themes.getCSSVar(muted-foreground);
+            cursor: pointer;
+
+            &:hover {
+                color: themes.getCSSVar(foreground);
+                background: themes.getCSSVar(secondary);
+            }
+
+            &:focus-visible {
+                outline: 2px solid themes.getCSSVar(ring);
+                outline-offset: 2px;
+            }
+        }
+
+        &__body {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 18.5rem;
+            flex: 1 1 auto;
+            min-height: 0;
+            border-top: 1px solid themes.getCSSVar(border);
+            border-bottom: 1px solid themes.getCSSVar(border);
+        }
+
+        &__main {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            min-height: 0;
+            padding: calc(#{themes.base(spacing)} * 5)
+                calc(#{themes.base(spacing)} * 6);
+        }
+
+        &__side {
+            display: flex;
+            flex-direction: column;
+            gap: calc(#{themes.base(spacing)} * 4);
+            min-height: 0;
+            overflow: auto;
+            padding: calc(#{themes.base(spacing)} * 5)
+                calc(#{themes.base(spacing)} * 5);
+            border-left: 1px solid themes.getCSSVar(border);
+            background: themes.getCSSVar(sidebar);
+            scrollbar-width: thin;
+            scrollbar-color: #{themes.getCSSVar(control-border)} transparent;
+
+            &::-webkit-scrollbar {
+                width: 8px;
+                height: 8px;
+            }
+
+            &::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background: themes.getCSSVar(control-border);
+                border-radius: 999px;
+            }
+
+            &::-webkit-scrollbar-thumb:hover {
+                background: themes.getCSSVar(border);
+            }
+
+            .components-base-control {
+                margin-bottom: 0;
+            }
+
+            .#{config.$prefix}.#{config.$prefix}__picker-dialog
+                &
+                .components-base-control__label,
+            .#{config.$prefix}.#{config.$prefix}__picker-dialog
+                &
+                .components-base-control__help {
+                color: themes.getCSSVar(muted-foreground);
+            }
+
+            .#{config.$prefix}.#{config.$prefix}__picker-dialog
+                &
+                .components-base-control__help {
+                font-size: themes.base(text-xs);
+                line-height: themes.base(text-xs--line-height);
+            }
+
+            .components-base-control__label {
+                font-size: themes.base(text-xs);
+                font-weight: themes.base(font-weight-normal);
+                letter-spacing: 0;
+                text-transform: none;
+                margin-bottom: 0.25rem;
+                display: inline-flex;
+            }
+
+            .components-toggle-control__label {
+                color: themes.getCSSVar(foreground);
+                font-size: themes.base(text-sm);
+                font-weight: themes.base(font-weight-medium);
+                letter-spacing: 0;
+                text-transform: none;
+            }
+
+            .components-toggle-control .components-base-control__field,
+            .components-toggle-control .components-h-stack,
+            .components-toggle-control .components-flex {
+                display: flex !important;
+                flex-direction: row !important;
+                flex-wrap: nowrap;
+                justify-content: space-between;
+                align-items: center;
+                gap: 0.75rem;
+                width: 100%;
+            }
+
+            .components-toggle-control .components-form-toggle {
+                order: 2;
+                flex: none;
+            }
+
+            .components-toggle-control .components-toggle-control__label,
+            .components-toggle-control .components-flex-item {
+                order: 1;
+                flex: 1 1 auto;
+            }
+
+            .components-text-control__input,
+            .components-textarea-control__input {
+                box-sizing: border-box;
+                width: 100%;
+                max-width: 100%;
+                min-height: 2.5rem;
+                background: themes.getCSSVar(input);
+                border-color: themes.getCSSVar(border);
+                border-radius: themes.base(radius-base);
+                box-shadow: none;
+
+                &:focus,
+                &:focus-visible {
+                    outline: 2px solid themes.getCSSVar(primary);
+                    outline-offset: 1px;
+                    border-color: themes.getCSSVar(primary);
+                    box-shadow: none;
+                }
+            }
+
+            .#{config.$prefix}__swatches {
+                gap: calc(#{themes.base(spacing)} * 2);
+            }
+
+            .#{config.$prefix}__swatch {
+                width: 1.25rem;
+                height: 1.25rem;
+                border-color: themes.getCSSVar(control-border);
+                background-clip: padding-box;
+
+                &:hover,
+                &:focus-visible,
+                &.is-selected {
+                    outline-color: themes.getCSSVar(primary);
+                    border-color: themes.getCSSVar(primary);
+                }
+            }
+
+            .components-range-control .components-base-control__field {
+                display: flex;
+                flex-direction: column;
+                gap: calc(#{themes.base(spacing)} * 2);
+                margin-bottom: 0.5rem;
+            }
+
+            .components-range-control,
+            .components-range-control .components-base-control__field {
+                max-width: 100%;
+            }
+
+            .components-range-control__root,
+            .components-range-control .components-h-stack,
+            .components-range-control
+                .components-flex:not(.components-input-control) {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: nowrap !important;
+                align-items: center;
+                gap: 0.75rem;
+                width: 100%;
+                max-width: 100%;
+                min-width: 0;
+            }
+
+            .components-range-control__wrapper {
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+
+            .components-range-control__tooltip {
+                display: none;
+            }
+
+            .components-range-control__number,
+            .components-range-control .components-input-control {
+                flex: 0 1 3.25rem;
+                box-sizing: border-box;
+                width: 3.25rem;
+                max-width: 100%;
+                min-width: 0;
+            }
+
+            .components-range-control .components-input-control__suffix,
+            .components-range-control .components-input-control__controls {
+                display: none;
+            }
+
+            .components-input-control__container {
+                box-sizing: border-box;
+                width: 100%;
+                max-width: 100%;
+                min-height: 2.25rem;
+                border: 1px solid themes.getCSSVar(border);
+                border-radius: themes.base(radius-base);
+                background: themes.getCSSVar(input);
+            }
+
+            .components-input-control__input,
+            .components-range-control input[type="number"] {
+                box-sizing: border-box;
+                width: 100%;
+                max-width: 100%;
+                min-height: 2.25rem !important;
+                margin: 0;
+                padding: 0 0.25rem !important;
+                line-height: inherit;
+                text-align: center;
+                appearance: textfield;
+                background: transparent !important;
+                border: 0 !important;
+                border-radius: themes.base(radius-base);
+                box-shadow: none !important;
+                color: themes.getCSSVar(foreground) !important;
+                outline: none !important;
+
+                &:focus,
+                &:focus-visible {
+                    background: transparent !important;
+                    border: 0 !important;
+                    border-color: transparent !important;
+                    box-shadow: none !important;
+                    color: themes.getCSSVar(foreground) !important;
+                    outline: none !important;
+                }
+
+                &::-webkit-outer-spin-button,
+                &::-webkit-inner-spin-button {
+                    appearance: none;
+                    margin: 0;
+                }
+            }
+
+            .components-input-control__backdrop {
+                border-color: transparent;
+                border-radius: themes.base(radius-base);
+                box-shadow: none !important;
+            }
+
+            .components-input-control__container:focus-within {
+                border-color: themes.getCSSVar(primary);
+                outline: 2px solid themes.getCSSVar(primary);
+                outline-offset: 1px;
+            }
+
+            .components-input-control__container:focus-within
+                .components-input-control__backdrop {
+                border-color: transparent !important;
+                box-shadow: none !important;
+            }
+
+            .components-range-control__rail,
+            .components-range-control__wrapper > span:first-of-type {
+                background: color-mix(
+                    in srgb,
+                    #{themes.getCSSVar(foreground)} 22%,
+                    #{themes.getCSSVar(card)}
+                );
+                box-shadow: none;
+            }
+
+            .components-range-control__track {
+                background: themes.getCSSVar(primary);
+            }
+
+            .components-range-control__thumb-wrapper,
+            .components-range-control__thumb {
+                background: themes.getCSSVar(primary);
+                border: 0;
+                box-shadow: none;
+            }
+
+            .components-range-control input[type="range"] {
+                width: 100%;
+                height: 1rem;
+                accent-color: themes.getCSSVar(primary);
+            }
+        }
+
+        &__preview {
+            display: flex;
+            flex-direction: column;
+            min-height: 6.5rem;
+            align-items: center;
+            justify-content: center;
+            gap: calc(#{themes.base(spacing)} * 1.5);
+            padding: calc(#{themes.base(spacing)} * 4);
+            border: 1px solid themes.getCSSVar(border);
+            border-radius: themes.base(radius-base);
+            background: themes.getCSSVar(input);
+            color: themes.getCSSVar(muted-foreground);
+            text-align: center;
+            font-size: themes.base(text-sm);
+
+            &.is-empty {
+                color: themes.getCSSVar(muted-foreground);
+            }
+        }
+
+        &__preview-heading {
+            display: inline-flex;
+            align-items: center;
+            gap: calc(#{themes.base(spacing)} * 2);
+            color: themes.getCSSVar(foreground);
+        }
+
+        &__preview-name {
+            font-size: themes.base(text-base);
+            font-weight: themes.base(font-weight-semibold);
+            line-height: themes.base(leading-tight);
+        }
+
+        &__preview-slug {
+            color: themes.getCSSVar(muted-foreground);
+            font-size: themes.base(text-sm);
+        }
+
+        &__preview-glyph {
+            display: flex;
+            color: themes.getCSSVar(foreground);
+
+            svg {
+                width: 1.5rem;
+                height: 1.5rem;
+            }
+        }
+
+        &__footer {
+            justify-content: flex-end;
+            padding: calc(#{themes.base(spacing)} * 4)
+                calc(#{themes.base(spacing)} * 6);
+
+            .components-button {
+                border-radius: themes.base(radius-base);
+            }
+        }
+    }
+}
+
+@media (max-width: 52rem) {
+    .#{config.$prefix}__picker-overlay {
+        padding: 1rem;
+        align-items: stretch;
+    }
+
+    .#{config.$prefix}__picker-dialog {
+        width: 100%;
+        height: auto;
+        max-height: calc(100vh - 2rem);
+
+        &__body {
+            grid-template-columns: 1fr;
+            overflow: auto;
+        }
+
+        &__side {
+            border-left: 0;
+            border-top: 1px solid themes.getCSSVar(border);
+        }
+
+        &__main {
+            min-height: 18rem;
+        }
+    }
+}
+
+// Classic editor toolbar. Same Lucide "shapes" mark as PLUGIN_MARK in picker/icons.js.
+i.mce-i-wpicons,
+i.wpicons-elementor-widget-icon {
+    font-family: inherit;
+
+    &::before {
+        content: "";
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        background-color: currentColor;
+        -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z'/%3E%3Crect x='3' y='14' width='7' height='7' rx='1'/%3E%3Ccircle cx='17.5' cy='17.5' r='3.5'/%3E%3C/svg%3E")
+            center / contain no-repeat;
+        mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z'/%3E%3Crect x='3' y='14' width='7' height='7' rx='1'/%3E%3Ccircle cx='17.5' cy='17.5' r='3.5'/%3E%3C/svg%3E")
+            center / contain no-repeat;
+    }
+}
+
+i.wpicons-elementor-widget-icon {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+
+    &::before {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.wpicons-icon {
+    svg {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    &.is-align-left {
+        text-align: left;
+    }
+
+    &.is-align-center {
+        text-align: center;
+    }
+
+    &.is-align-right {
+        text-align: right;
+    }
+}
+
+.wpicons-icon__placeholder {
+    display: inline-block;
+    padding: 0.35rem 0.6rem;
+    border: 1px dashed currentColor;
+    font-size: 13px;
+    line-height: 1.4;
+    opacity: 0.8;
+}
+
+.wpicons-elementor-choose,
+.wpicons-ux-choose {
+    margin-bottom: 12px;
+}
+
+.wpicons-elementor-summary {
+    margin: 8px 0 0;
+}
