@@ -6,6 +6,7 @@ use WPIcons\Admin\Settings;
 use WPIcons\Icons\CatalogStore;
 use WPIcons\Icons\Registry;
 use WPIcons\Icons\Renderer;
+use WPIcons\Integrations\Elementor\Integration as ElementorIntegration;
 use WP_HTML_Tag_Processor;
 
 if (!\defined('ABSPATH')) {
@@ -21,6 +22,9 @@ class InlineIcons
         add_filter('the_content', [$this, 'replaceInHtml'], 13);
         add_filter('acf_the_content', [$this, 'replaceInHtml'], 13);
         add_filter('do_shortcode_tag', [$this, 'replaceInHtml']);
+        // Elementor text widgets render through these, not the_content.
+        add_filter('widget_text', [$this, 'replaceInHtml']);
+        add_filter('elementor/widget/render_content', [$this, 'replaceInHtml']);
     }
 
     /**
@@ -154,6 +158,10 @@ class InlineIcons
             return false;
         }
 
+        if (ElementorIntegration::isPreview()) {
+            return false;
+        }
+
         return true;
     }
 
@@ -166,7 +174,11 @@ class InlineIcons
             return false;
         }
 
-        return \function_exists('ux_builder_is_active') && ux_builder_is_active();
+        if (\function_exists('ux_builder_is_active') && ux_builder_is_active()) {
+            return true;
+        }
+
+        return ElementorIntegration::isPreview();
     }
 
     private function isRestEditRequest(): bool

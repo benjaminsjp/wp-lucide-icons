@@ -836,7 +836,8 @@
 }
 
 // Classic editor toolbar. Same Lucide "shapes" mark as PLUGIN_MARK in picker/icons.js.
-i.mce-i-wpicons {
+i.mce-i-wpicons,
+i.wpicons-elementor-widget-icon {
     font-family: inherit;
 
     &::before {
@@ -850,4 +851,52 @@ i.mce-i-wpicons {
         mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z'/%3E%3Crect x='3' y='14' width='7' height='7' rx='1'/%3E%3Ccircle cx='17.5' cy='17.5' r='3.5'/%3E%3C/svg%3E")
             center / contain no-repeat;
     }
+}
+
+i.wpicons-elementor-widget-icon {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+
+    &::before {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.wpicons-icon {
+    svg {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    &.is-align-left {
+        text-align: left;
+    }
+
+    &.is-align-center {
+        text-align: center;
+    }
+
+    &.is-align-right {
+        text-align: right;
+    }
+}
+
+.wpicons-icon__placeholder {
+    display: inline-block;
+    padding: 0.35rem 0.6rem;
+    border: 1px dashed currentColor;
+    font-size: 13px;
+    line-height: 1.4;
+    opacity: 0.8;
+}
+
+.wpicons-elementor-choose,
+.wpicons-ux-choose {
+    margin-bottom: 12px;
+}
+
+.wpicons-elementor-summary {
+    margin: 8px 0 0;
 }

@@ -21,6 +21,10 @@ Dates use the [ISO 8601 date format](https://www.iso.org/iso-8601-date-and-time-
 - Hooks `wpicons_loaded`, `wpicons_icon_args`, and `wpicons_icon_svg`
 - Editor script `wpicons-api` (`window.wpIcons`) with `getIcon`, a React `Icon`, `openPicker`, and `parseRef`
 - English and Norwegian translations
+- **Insert icon** on Elementor visual text controls
+- Elementor **WP Icons** widget, with the same icon settings as the block plus alignment
+- Flatsome UX Builder **WP Icons** element
+- Optional `[wp_icon]` `align` attribute (`left`, `center`, or `right`)
 
 ### Changed
 

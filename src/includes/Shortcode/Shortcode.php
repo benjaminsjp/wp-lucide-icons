@@ -38,14 +38,23 @@ class Shortcode
                 'variant' => '',
                 'class' => '',
                 'title' => '',
+                'align' => '',
             ],
             \is_array($atts) ? $atts : [],
             'wp_icon'
         );
 
         $stroke = $atts['stroke'] !== '' ? $atts['stroke'] : $atts['width'];
+        $name = trim((string) $atts['name']);
 
-        return (new Renderer())->fromAttributes([
+        if ($name === '' && $this->inUxBuilder()) {
+            return $this->wrapAlign(
+                '<span class="wpicons-icon__placeholder">' . esc_html__('Choose an icon', 'wpicons') . '</span>',
+                (string) $atts['align']
+            );
+        }
+
+        $svg = (new Renderer())->fromAttributes([
             'library' => $atts['library'],
             'name' => $atts['name'],
             'size' => $atts['size'],
@@ -55,6 +64,27 @@ class Shortcode
             'class' => $atts['class'],
             'title' => $atts['title'],
         ]);
+
+        return $this->wrapAlign($svg, (string) $atts['align']);
+    }
+
+    private function inUxBuilder(): bool
+    {
+        return \function_exists('ux_builder_is_active') && ux_builder_is_active();
+    }
+
+    private function wrapAlign(string $html, string $align): string
+    {
+        if ($html === '') {
+            return '';
+        }
+
+        $align = strtolower(trim($align));
+        if (!\in_array($align, ['left', 'center', 'right'], true)) {
+            return $html;
+        }
+
+        return '<div class="wpicons wpicons-icon is-align-' . esc_attr($align) . '">' . $html . '</div>';
     }
 
     /**

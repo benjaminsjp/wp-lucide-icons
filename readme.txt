@@ -18,7 +18,8 @@ WP Icons lets you place icons from open-source icon libraries anywhere in WordPr
 
 * **Icon** block for the block editor, with library, icon, size, color, style or weight, and stroke width (stroke-based styles)
 * **Insert icon** on the paragraph, heading, and other rich-text toolbars. Inline icons follow the surrounding text size and color
-* **Insert icon** button in the classic editor (TinyMCE)
+* **Insert icon** button in the classic editor (TinyMCE) and in Elementor visual text fields
+* **WP Icons** widget in Elementor, and a **WP Icons** element in Flatsome UX Builder
 * `[wp_icon]` shortcode, plus the legacy `[lucide_icon]` alias
 * Admin **Library** to browse icons, preview options, and copy a shortcode
 * **Settings** for default size, color, and library, plus per-library style, stroke width, and color, and for enabling each library
@@ -48,7 +49,7 @@ License links are listed under "Third-party libraries & licenses" below.
 
 `[wp_icon library="material-symbols" name="favorite" size="24" color="currentColor"]`
 
-Attributes: `library`, `name`, `size`, `color` (a CSS color, or `brand` for Simple Icons), `stroke` (stroke-based styles), `weight` (Phosphor), `style` (Tabler, Heroicons, Ionicons), `class`, and `title`. Omitted attributes fall back to **Appearance > WP Icons > Settings**. An empty `title` hides the icon from assistive technology.
+Attributes: `library`, `name`, `size`, `color` (a CSS color, or `brand` for Simple Icons), `stroke` (stroke-based styles), `weight` (Phosphor), `style` (Tabler, Heroicons, Ionicons), `class`, `title`, and `align` (`left`, `center`, or `right`). Omitted attributes fall back to **Appearance > WP Icons > Settings**. An empty `title` hides the icon from assistive technology. An empty `align` leaves the SVG unwrapped.
 
 = External requests and privacy =
 
@@ -135,6 +136,10 @@ Its settings, cached catalogs in `wp-content/uploads/wp-icons/`, transients, and
 * Added: Hooks `wpicons_loaded`, `wpicons_icon_args`, and `wpicons_icon_svg`.
 * Added: Editor script `wpicons-api` (`window.wpIcons`) for previews and the icon picker.
 * Added: English and Norwegian translations.
+* Added: Insert icon on Elementor visual text controls.
+* Added: Elementor WP Icons widget, with the same icon settings as the block plus alignment.
+* Added: Flatsome UX Builder WP Icons element.
+* Added: Optional `[wp_icon]` `align` attribute (`left`, `center`, or `right`).
 * Changed: Plugin renamed from Lucide Icons to WP Icons.
 * Changed: Icon SVG comes from catalogs stored in the plugin; the editor no longer loads `lucide.min.js`.
 * Changed: Classic editor button now uses the shared icon picker with live preview.
@@ -174,7 +179,7 @@ Its settings, cached catalogs in `wp-content/uploads/wp-icons/`, transients, and
 == Upgrade Notice ==
 
 = 2.0.0 =
-Renamed to WP Icons. Adds the Icon block, eight icon libraries, and PHP helpers. Requires WordPress 6.6 and PHP 8.1. Existing `[lucide_icon]` shortcodes keep working.
+Renamed to WP Icons. Adds the Icon block, eight icon libraries, Elementor and Flatsome icon elements, and PHP helpers. Requires WordPress 6.6 and PHP 8.1. Existing `[lucide_icon]` shortcodes keep working.
 
 == Third-party libraries & licenses ==
 

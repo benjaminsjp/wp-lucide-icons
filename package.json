@@ -27,12 +27,13 @@
         "sass:build": "node node_modules/sass/sass.js src/assets/scss:src/assets/css --style compressed --no-source-map",
         "build": "node node_modules/@wordpress/scripts/bin/wp-scripts.js build",
         "start": "node node_modules/@wordpress/scripts/bin/wp-scripts.js start",
-        "publish": "node publish.js wp-lucide-icons.php",
+        "publish": "node publish.mjs wp-lucide-icons",
         "sync-icons": "node scripts/sync-packages.js"
     },
     "dependencies": {
         "archiver": "^8.0.0",
         "fs-extra": "^11.4.1",
+        "ignore": "^7.0.14",
         "sass": "^1.107.1"
     },
     "devDependencies": {

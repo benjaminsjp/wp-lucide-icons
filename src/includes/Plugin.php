@@ -10,6 +10,8 @@ use WPIcons\Admin\TinyMce;
 use WPIcons\Blocks\IconBlock;
 use WPIcons\Content\InlineIcons;
 use WPIcons\Icons\Cdn\CdnCatalog;
+use WPIcons\Integrations\Elementor\Integration as ElementorIntegration;
+use WPIcons\Integrations\Flatsome\IconElement;
 use WPIcons\Rest\IconsController;
 use WPIcons\Shortcode\Shortcode;
 use WPIcons\Template\Template;
@@ -58,6 +60,8 @@ class Plugin
         (new InlineIcons())->register();
         (new TinyMce())->register();
         (new CdnCatalog())->register();
+        (new ElementorIntegration($this->templates))->register();
+        (new IconElement($this->templates))->register();
 
         /**
          * Fires once WP Icons has registered its hooks and the public helpers are ready.

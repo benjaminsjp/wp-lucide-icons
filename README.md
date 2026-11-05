@@ -13,7 +13,8 @@ The plugin is **WP Icons**. The repository and plugin folder are `wp-lucide-icon
 
 - **Icon** block in the block editor
 - **Insert icon** on paragraph, heading, and other RichText toolbars
-- **Insert icon** button in the classic editor (TinyMCE)
+- **Insert icon** button in the classic editor (TinyMCE) and in Elementor visual text fields
+- **WP Icons** widget in Elementor, and a **WP Icons** element in Flatsome UX Builder
 - `[wp_icon]` shortcode
 - Admin **Library** browser and **Settings**
 - Bundled SVG catalogs, with an optional cached CDN refresh when the bundle is stale
@@ -82,6 +83,16 @@ To place an icon inside a paragraph, heading, or other text, use the **Insert ic
 
 Use the **Insert icon** button on the TinyMCE toolbar. The same control appears in the Classic block and other TinyMCE fields.
 
+### Elementor
+
+The **Text Editor** widget, and any other Elementor control that uses the WordPress visual editor, has the same **Insert icon** button. Heading and other plain text fields stay plain text.
+
+The **WP Icons** widget is in the WP Icons category. It displays one icon, with the same library, style, size, color, stroke, and accessible name as the block, plus alignment.
+
+### Flatsome UX Builder
+
+Add the **WP Icons** element from Content. **Choose icon** opens the shared picker. Alignment is left, center, or right.
+
 ### Shortcode
 
 ```
@@ -101,6 +112,7 @@ Use the **Insert icon** button on the TinyMCE toolbar. The same control appears 
 | `width`   | empty                                 | Legacy alias for `stroke` when `stroke` is omitted                   |
 | `class`   | empty                                 | Extra class on the SVG                                               |
 | `title`   | empty                                 | Accessible title. Empty means the icon is hidden from assistive tech |
+| `align`   | empty                                 | `left`, `center`, or `right`. Empty leaves the SVG unwrapped         |
 
 Omitted attributes fall back to **Appearance → WP Icons → Settings**.
 

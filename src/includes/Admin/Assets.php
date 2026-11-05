@@ -2,6 +2,7 @@
 
 namespace WPIcons\Admin;
 
+use WPIcons\Integrations\Elementor\Integration as ElementorIntegration;
 use WPIcons\Template\Template;
 
 if (!\defined('ABSPATH')) {
@@ -37,12 +38,23 @@ class Assets
     {
         $this->enqueueWpiconsStyle('wpicons');
 
-        if (!isset($_GET['uxb_iframe'])) {
+        $uxBuilder = isset($_GET['uxb_iframe']);
+        if (!$uxBuilder && !ElementorIntegration::isPreview()) {
             return;
         }
 
-        $this->enqueueTinyMcePicker();
+        if ($uxBuilder) {
+            $this->enqueueTinyMcePicker();
+        }
 
+        $this->enqueueInlineMask();
+    }
+
+    /**
+     * Paints inline-icon placeholders while a builder preview is open.
+     */
+    public function enqueueInlineMask(): void
+    {
         $relative = 'js/inline/mask.js';
         wp_enqueue_script(
             'wpicons-inline-mask',

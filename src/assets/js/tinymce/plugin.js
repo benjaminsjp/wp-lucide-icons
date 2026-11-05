@@ -114,6 +114,78 @@
         });
     }
 
+    function presentationStyle(style, size) {
+        var parts = [];
+        var background = String(style || '').match(/background-color\s*:\s*([^;]+)/i);
+        var width = String(style || '').match(/(?:^|;)\s*width\s*:\s*([^;]+)/i);
+        var height = String(style || '').match(/(?:^|;)\s*height\s*:\s*([^;]+)/i);
+        if (background) {
+            parts.push('background-color:' + background[1].trim());
+        }
+        if (width) {
+            parts.push('width:' + width[1].trim());
+        } else if (size && /^\d+$/.test(String(size))) {
+            parts.push('width:' + size + 'px');
+        }
+        if (height) {
+            parts.push('height:' + height[1].trim());
+        } else if (size && /^\d+$/.test(String(size))) {
+            parts.push('height:' + size + 'px');
+        }
+        return parts.join(';');
+    }
+
+    // Gutenberg stores a transparent GIF plus an unquoted mask URL. TinyMCE
+    // splits that URL at the semicolon in data:image/svg+xml;base64. Show the
+    // SVG as the image source, the same way spanToImg does.
+    function repairMaskImgs(html) {
+        if (!html || html.indexOf('wpicons-inline') === -1 || html.indexOf('<img') === -1) {
+            return html;
+        }
+
+        return html.replace(/<img\b(?=[^>]*\bwpicons-inline\b)[^>]*>/gi, function (tag) {
+            var dataSrc = readAttr(tag, 'data-src');
+            if (!dataSrc || dataSrc.indexOf('data:image/svg+xml') !== 0) {
+                return tag;
+            }
+
+            var src = readAttr(tag, 'src');
+            var style = readAttr(tag, 'style');
+            var gif = src.indexOf('data:image/gif') === 0;
+            if (!gif && style.indexOf('--wpicons-src') === -1) {
+                return tag;
+            }
+
+            var name = readAttr(tag, 'data-name');
+            if (!name) {
+                return tag;
+            }
+
+            var library = readAttr(tag, 'data-library') || 'lucide';
+            var color = readAttr(tag, 'data-color') || 'currentColor';
+            var stroke = readAttr(tag, 'data-stroke') || '2';
+            var size = readAttr(tag, 'data-size');
+            var iconTitle = readAttr(tag, 'data-title');
+            var kept = presentationStyle(style, size);
+
+            return (
+                '<img class="wpicons-inline"' +
+                ' src="' + escapeAttr(dataSrc) + '"' +
+                ' data-src="' + escapeAttr(dataSrc) + '"' +
+                (kept ? ' style="' + escapeAttr(kept) + '"' : '') +
+                ' data-library="' + escapeAttr(library) + '"' +
+                ' data-name="' + escapeAttr(name) + '"' +
+                ' data-color="' + escapeAttr(color) + '"' +
+                ' data-stroke="' + escapeAttr(stroke) + '"' +
+                optionalAttr('data-size', size) +
+                optionalAttr('data-hex', readAttr(tag, 'data-hex')) +
+                optionalAttr('data-title', iconTitle) +
+                optionalAttr('data-variant', readAttr(tag, 'data-variant')) +
+                ' alt="' + escapeAttr(iconTitle || readAttr(tag, 'alt')) + '" />'
+            );
+        });
+    }
+
     function imgToSpan(html) {
         if (!html || html.indexOf('wpicons-inline') === -1 || html.indexOf('<img') === -1) {
             return html;
@@ -204,7 +276,7 @@
 
             editor.on('BeforeSetContent', function (event) {
                 if (event.content) {
-                    event.content = spanToImg(event.content);
+                    event.content = repairMaskImgs(spanToImg(event.content));
                 }
             });
 
