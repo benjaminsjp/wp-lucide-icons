@@ -6,7 +6,7 @@ The format for this changelog is based on [Keep a Changelog](https://keepachange
 and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).  
 Dates use the [ISO 8601 date format](https://www.iso.org/iso-8601-date-and-time-format.html) of `YYYY-MM-DD`.
 
-## [2.0.0]
+## [2.0.0] - 2026-11-05
 
 ### Added
 
